@@ -35,6 +35,7 @@ public class Organism {
         rectangle.y = randomDirection.y;
         rectangle.width = CELL_SIZE;
         rectangle.height = CELL_SIZE;
+        Gdx.app.log("MyTag", position.x + " " + position.y);
     }
 
     public Organism(List<Organism> organisms) {
@@ -45,13 +46,24 @@ public class Organism {
         texture = new Texture(pixmap);
         do {
             randomPosition = CommonUtils.getRandomPosition();
-        } while (!CommonUtils.isValidPosition(randomPosition, organisms));
+        } while (CommonUtils.isNotValidPosition(randomPosition, organisms));
         position.set(randomPosition);
         rectangle.x = randomPosition.x;
         rectangle.y = randomPosition.y;
         rectangle.width = CELL_SIZE;
         rectangle.height = CELL_SIZE;
-        Gdx.app.log("MyTag", randomPosition.x + " " + randomPosition.y);
+    }
+
+    public Organism(Vector2 position) {
+        Pixmap pixmap = new Pixmap(CELL_SIZE, CELL_SIZE, RGBA8888);
+        pixmap.setColor(Color.RED);
+        pixmap.fillRectangle(0, 0, CELL_SIZE, CELL_SIZE);
+        texture = new Texture(pixmap);
+        this.position.set(position);
+        rectangle.x = position.x;
+        rectangle.y = position.y;
+        rectangle.width = CELL_SIZE;
+        rectangle.height = CELL_SIZE;
     }
 
     public void render(Batch batch) {
@@ -62,7 +74,10 @@ public class Organism {
         texture.dispose();
     }
 
-    public void move(List<Organism> organisms) {
+    public void move(List<Organism> organisms, List<Organism> newOrganisms) {
+        if (!CommonUtils.isFreeSpace(position, organisms, newOrganisms)) {
+            return;
+        }
         Vector2 randomPosition;
         do {
             if (isMomentumChanged()) {
@@ -76,6 +91,27 @@ public class Organism {
         } while (CommonUtils.isNotValidPosition(randomPosition, organisms)
                 || CommonUtils.isNotValidDirection(randomPosition));
         position.set(randomPosition);
+    }
+
+    public Organism division(List<Organism> organisms, List<Organism> newOrganisms) {
+        Vector2 randomPosition;
+        int multiplier = 1;
+        if (CommonUtils.isNotFreeSpace(position, organisms, newOrganisms, multiplier)) {
+            return null;
+        }
+//        while (CommonUtils.isNotFreeSpace(position, organisms, newOrganisms, multiplier)) {
+//            multiplier++;
+//            if (STEP * multiplier > 30) {
+//                return null;
+//            }
+//        }
+        do {
+            randomPosition = CommonUtils.getRandomDirection(position, CommonUtils.getRandomDirection(), multiplier);
+        } while (CommonUtils.isNotValidPosition(randomPosition, organisms)
+                || CommonUtils.isNotValidDirection(randomPosition));
+//        Gdx.app.log("MyTag 1", position.x + " " + position.y);
+//        Gdx.app.log("MyTag 2", randomPosition.x + " " + randomPosition.y);
+        return new Organism(randomPosition);
     }
 
     public Rectangle getRectangle() {
