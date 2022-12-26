@@ -25,24 +25,52 @@ public class CommonUtils {
 
     public static Vector2 getRandomDirection(Vector2 position) {
         Vector2 vector2 = new Vector2(position);
-        int move = MathUtils.random(1, 9);
-        if (move == 1) {
+        int direction = MathUtils.random(1, 9);
+        if (direction == 1) {
             return vector2.add(-STEP, +STEP);
-        } else if (move == 2) {
+        } else if (direction == 2) {
             return vector2.add(0, +STEP);
-        } else if (move == 3) {
+        } else if (direction == 3) {
             return vector2.add(+STEP, +STEP);
-        } else if (move == 4) {
+        } else if (direction == 4) {
             return vector2.add(-STEP, 0);
-        } else if (move == 5) {
+        } else if (direction == 5) {
             return vector2.add(0, 0);
-        } else if (move == 6) {
+        } else if (direction == 6) {
             return vector2.add(+STEP, 0);
-        } else if (move == 7) {
+        } else if (direction == 7) {
             return vector2.add(-STEP, -STEP);
-        } else if (move == 8) {
+        } else if (direction == 8) {
             return vector2.add(0, -STEP);
-        } else if (move == 9) {
+        } else if (direction == 9) {
+            return vector2.add(+STEP, -STEP);
+        }
+        return null;
+    }
+
+    public static int getRandomDirection() {
+        return MathUtils.random(1, 9);
+    }
+
+    public static Vector2 getRandomDirection(Vector2 position, int direction) {
+        Vector2 vector2 = new Vector2(position);
+        if (direction == 1) {
+            return vector2.add(-STEP, +STEP);
+        } else if (direction == 2) {
+            return vector2.add(0, +STEP);
+        } else if (direction == 3) {
+            return vector2.add(+STEP, +STEP);
+        } else if (direction == 4) {
+            return vector2.add(-STEP, 0);
+        } else if (direction == 5) {
+            return vector2.add(0, 0);
+        } else if (direction == 6) {
+            return vector2.add(+STEP, 0);
+        } else if (direction == 7) {
+            return vector2.add(-STEP, -STEP);
+        } else if (direction == 8) {
+            return vector2.add(0, -STEP);
+        } else if (direction == 9) {
             return vector2.add(+STEP, -STEP);
         }
         return null;
