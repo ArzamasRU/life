@@ -7,12 +7,18 @@ import static ru.lavr.gdx.constants.Constant.RIGHT_EDGE;
 import static ru.lavr.gdx.constants.Constant.STEP;
 import static ru.lavr.gdx.constants.Constant.UPPER_EDGE;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.Organism;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class CommonUtils {
@@ -95,5 +101,35 @@ public class CommonUtils {
     public static boolean isNotFreeSpace(
             Vector2 position, List<Organism> organisms, List<Organism> newOrganisms, int multiplier) {
         return !isFreeSpace(position, organisms, newOrganisms, multiplier);
+    }
+
+    public static List<Organism> getNeighbors(Vector2 position, List<Organism> organisms, List<Organism> newOrganisms) {
+        Set<Organism> set = new HashSet<>();
+        Vector2 vector2 = new Vector2(position);
+        vector2.add(-STEP, -STEP);
+        Rectangle rectangle = new Rectangle(vector2.x, vector2.y, CELL_SIZE * 3, CELL_SIZE * 3);
+        List<Organism> neighbors = organisms.stream()
+                .filter(organism -> !organism.isFullySurrounded())
+                .filter(organism -> {
+                    Rectangle rect = organism.getRectangle();
+                    return rect.overlaps(rectangle);
+                }).collect(Collectors.toList());
+        set.addAll(neighbors);
+        if (newOrganisms != null) {
+            List<Organism> newNeighbors = newOrganisms.stream()
+                    .filter(organism -> !organism.isFullySurrounded())
+                    .filter(organism -> {
+                        Rectangle rect = organism.getRectangle();
+                        return rect.overlaps(rectangle);
+                    }).collect(Collectors.toList());
+            set.addAll(newNeighbors);
+        }
+//        if (set.size() > 9) {
+//            Gdx.app.log("MyTag 0", String.valueOf(set.size()));
+//            Gdx.app.log("MyTag 1", position.toString());
+//            Gdx.app.log("MyTag 2", rectangle.toString());
+//            set.forEach(n -> Gdx.app.log("MyTag", n.getRectangle().toString()));
+//        }
+        return new ArrayList<>(set);
     }
 }

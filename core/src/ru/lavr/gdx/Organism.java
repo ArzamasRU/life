@@ -15,12 +15,21 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.utils.CommonUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Organism {
     private final Vector2 position = new Vector2();
     private final Texture texture;
     private final Rectangle rectangle = new Rectangle();
+
+    private boolean fullySurrounded;
+    private final Set<Organism> neighbors = new HashSet<>();
 
     private int momentum = 0;
 
@@ -52,9 +61,12 @@ public class Organism {
         rectangle.y = randomPosition.y;
         rectangle.width = CELL_SIZE;
         rectangle.height = CELL_SIZE;
+        List<Organism> neighbors = CommonUtils.getNeighbors(this.position, organisms, null);
+        neighbors.stream().map(Organism::getNeighbors).forEach(ns -> ns.add(this));
+        this.neighbors.addAll(neighbors);
     }
 
-    public Organism(Vector2 position) {
+    public Organism(Vector2 position, List<Organism> organisms, List<Organism> newOrganisms) {
         Pixmap pixmap = new Pixmap(CELL_SIZE, CELL_SIZE, RGBA8888);
         pixmap.setColor(Color.RED);
         pixmap.fillRectangle(0, 0, CELL_SIZE, CELL_SIZE);
@@ -64,6 +76,9 @@ public class Organism {
         rectangle.y = position.y;
         rectangle.width = CELL_SIZE;
         rectangle.height = CELL_SIZE;
+        List<Organism> neighbors = CommonUtils.getNeighbors(this.position, organisms, newOrganisms);
+        neighbors.stream().map(Organism::getNeighbors).forEach(ns -> ns.add(this));
+        this.neighbors.addAll(neighbors);
     }
 
     public void render(Batch batch) {
@@ -94,9 +109,16 @@ public class Organism {
     }
 
     public Organism division(List<Organism> organisms, List<Organism> newOrganisms) {
+        if (fullySurrounded) {
+            return null;
+        }
+        if (neighbors.size() >= 9) {
+            fullySurrounded = true;
+            return null;
+        }
         Vector2 randomPosition;
         int multiplier = 1;
-        if (CommonUtils.isNotFreeSpace(position, organisms, newOrganisms, multiplier)) {
+        if (CommonUtils.isNotFreeSpace(position, new ArrayList<>(neighbors), newOrganisms, multiplier)) {
             return null;
         }
 //        while (CommonUtils.isNotFreeSpace(position, organisms, newOrganisms, multiplier)) {
@@ -107,15 +129,9 @@ public class Organism {
 //        }
         do {
             randomPosition = CommonUtils.getRandomDirection(position, CommonUtils.getRandomDirection(), multiplier);
-        } while (CommonUtils.isNotValidPosition(randomPosition, organisms)
+        } while (CommonUtils.isNotValidPosition(randomPosition, new ArrayList<>(neighbors))
                 || CommonUtils.isNotValidDirection(randomPosition));
-//        Gdx.app.log("MyTag 1", position.x + " " + position.y);
-//        Gdx.app.log("MyTag 2", randomPosition.x + " " + randomPosition.y);
-        return new Organism(randomPosition);
-    }
-
-    public Rectangle getRectangle() {
-        return rectangle;
+        return new Organism(randomPosition, organisms, newOrganisms);
     }
 
     private boolean isMomentumChanged() {
@@ -124,5 +140,36 @@ public class Organism {
         }
         int random = MathUtils.random(0, MAX_MOMENTUM);
         return random > MOMENTUM;
+    }
+
+    public Rectangle getRectangle() {
+        return rectangle;
+    }
+
+    public Set<Organism> getNeighbors() {
+        return neighbors;
+    }
+
+    public boolean isFullySurrounded() {
+        return fullySurrounded;
+    }
+
+    public Vector2 getPosition() {
+        return position;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Organism organism = (Organism) o;
+
+        return position.equals(organism.position);
+    }
+
+    @Override
+    public int hashCode() {
+        return position.hashCode();
     }
 }
