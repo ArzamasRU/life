@@ -10,23 +10,22 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.utils.CommonUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class Organism {
-    private final Vector2 position = new Vector2();
-    private final Texture texture;
-    private final Rectangle rectangle = new Rectangle();
+    private Vector2 position = new Vector2();
+    private Texture texture;
+
+    private Rectangle rectangle = new Rectangle();
 
     private boolean fullySurrounded;
     private final Set<Organism> neighbors = new HashSet<>();
@@ -79,6 +78,7 @@ public class Organism {
         List<Organism> neighbors = CommonUtils.getNeighbors(this.position, organisms, newOrganisms);
         neighbors.stream().map(Organism::getNeighbors).forEach(ns -> ns.add(this));
         this.neighbors.addAll(neighbors);
+
     }
 
     public void render(Batch batch) {
@@ -89,8 +89,19 @@ public class Organism {
         texture.dispose();
     }
 
-    public void move(List<Organism> organisms, List<Organism> newOrganisms) {
+    public void move(List<Organism> organisms, List<Organism> newOrganisms, SpriteBatch batch) {
         if (!CommonUtils.isFreeSpace(position, organisms, newOrganisms)) {
+            Gdx.app.log("MyTag", position.toString());
+//            organisms.stream()
+//                    .filter(organism -> organisms.stream()
+//                            .anyMatch(org -> {
+//                                Vector2 position1 = organism.getPosition();
+//                                Rectangle rectangle1 = new Rectangle(position1.x, position1.y, CELL_SIZE, CELL_SIZE);
+//                                Vector2 position2 = org.getPosition();
+//                                Rectangle rectangle2 = new Rectangle(position2.x, position2.y, CELL_SIZE, CELL_SIZE);
+//                                return rectangle1.overlaps(rectangle2) && !organism.equals(org);
+//                            }))
+//                    .forEach(organism -> Gdx.app.log("MyTag 111 ", organism.toString()));
             return;
         }
         Vector2 randomPosition;
@@ -105,10 +116,12 @@ public class Organism {
             }
         } while (CommonUtils.isNotValidPosition(randomPosition, organisms)
                 || CommonUtils.isNotValidDirection(randomPosition));
+        rectangle.x = randomPosition.x;
+        rectangle.y = randomPosition.y;
         position.set(randomPosition);
     }
 
-    public Organism division(List<Organism> organisms, List<Organism> newOrganisms) {
+    public Organism division(List<Organism> organisms, List<Organism> newOrganisms, Batch batch) {
         if (fullySurrounded) {
             return null;
         }
@@ -131,7 +144,9 @@ public class Organism {
             randomPosition = CommonUtils.getRandomDirection(position, CommonUtils.getRandomDirection(), multiplier);
         } while (CommonUtils.isNotValidPosition(randomPosition, new ArrayList<>(neighbors))
                 || CommonUtils.isNotValidDirection(randomPosition));
-        return new Organism(randomPosition, organisms, newOrganisms);
+        Organism organism = new Organism(randomPosition, organisms, newOrganisms);
+        organism.render(batch);
+        return organism;
     }
 
     private boolean isMomentumChanged() {
@@ -156,6 +171,22 @@ public class Organism {
 
     public Vector2 getPosition() {
         return position;
+    }
+
+    public void setPosition(Vector2 position) {
+        this.position = position;
+    }
+
+    public void setRectangle(Rectangle rectangle) {
+        this.rectangle = rectangle;
+    }
+
+    @Override
+    public String toString() {
+        return "Organism{" +
+                "position=" + position +
+                ", rectangle=" + rectangle +
+                '}';
     }
 
     @Override
