@@ -7,7 +7,13 @@ public class Constant {
     public static final int MOMENTUM = 7;
     public static final int MAX_MOMENTUM = 10;
 
-//    значения для большого монитора
+//    значения для desctop
+    public static final int UPPER_EDGE = 720;
+    public static final int RIGHT_EDGE = 1280;
+    public static final int BOTTOM_EDGE = 0;
+    public static final int LEFT_EDGE = 0;
+
+    //    значения для большого монитора
 //    public static final int UPPER_EDGE = 1800;
 //    public static final int RIGHT_EDGE = 3800;
 //    public static final int BOTTOM_EDGE = 150;
@@ -18,10 +24,4 @@ public class Constant {
 //    public static final int RIGHT_EDGE = 1800;
 //    public static final int BOTTOM_EDGE = 100;
 //    public static final int LEFT_EDGE = 0;
-
-//    значения для desctop
-    public static final int UPPER_EDGE = 720;
-    public static final int RIGHT_EDGE = 1280;
-    public static final int BOTTOM_EDGE = 0;
-    public static final int LEFT_EDGE = 0;
 }

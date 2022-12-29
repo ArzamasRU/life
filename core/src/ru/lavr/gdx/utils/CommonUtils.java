@@ -7,21 +7,20 @@ import static ru.lavr.gdx.constants.Constant.RIGHT_EDGE;
 import static ru.lavr.gdx.constants.Constant.STEP;
 import static ru.lavr.gdx.constants.Constant.UPPER_EDGE;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.Organism;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class CommonUtils {
+    private final static Rectangle rectangle = new Rectangle(0, 0, CELL_SIZE, CELL_SIZE);
+    private final static Rectangle field = new Rectangle(LEFT_EDGE, BOTTOM_EDGE, RIGHT_EDGE, UPPER_EDGE);
+    private final static Rectangle neighborsRectangle = new Rectangle(0, 0, CELL_SIZE * 3, CELL_SIZE * 3);
+
     public static Vector2 getRandomPosition() {
         Vector2 vector2 = new Vector2();
         float x = MathUtils.random(LEFT_EDGE / CELL_SIZE, RIGHT_EDGE / CELL_SIZE);
@@ -33,11 +32,11 @@ public class CommonUtils {
         return MathUtils.random(1, 9);
     }
 
-    public static Vector2 getRandomDirection(Vector2 position, int direction) {
-        return getRandomDirection(position, direction, 1);
+    public static Vector2 getDirection(Vector2 position, int direction) {
+        return getDirection(position, direction, 1);
     }
 
-    public static Vector2 getRandomDirection(Vector2 position, int direction, int multiplier) {
+    public static Vector2 getDirection(Vector2 position, int direction, int multiplier) {
         Vector2 vector2 = new Vector2(position);
         int multipliedStep = STEP * multiplier;
         if (direction == 1) {
@@ -64,17 +63,18 @@ public class CommonUtils {
 
     //    проверяет не перекрывается ли расположение с другими клетками
     public static boolean isValidPosition(Vector2 vector2, List<Organism> organisms) {
-        Rectangle rectangle = new Rectangle(vector2.x, vector2.y, CELL_SIZE, CELL_SIZE);
+        rectangle.x = vector2.x;
+        rectangle.y = vector2.y;
         return organisms.stream()
-                .map(Organism::getRectangle)
+                .map(Organism::getUpdatedRectangle)
                 .noneMatch(rectangle::overlaps);
     }
 
     //    проверяет не заходит ли клетка за поля
     public static boolean isValidDirection(Vector2 vector2) {
-        Rectangle field = new Rectangle(LEFT_EDGE, BOTTOM_EDGE, RIGHT_EDGE, UPPER_EDGE);
-        Rectangle cell = new Rectangle(vector2.x, vector2.y, CELL_SIZE, CELL_SIZE);
-        return cell.overlaps(field);
+        rectangle.x = vector2.x;
+        rectangle.y = vector2.y;
+        return field.overlaps(rectangle);
     }
 
     public static boolean isNotValidPosition(Vector2 vector2, List<Organism> organisms) {
@@ -92,7 +92,7 @@ public class CommonUtils {
     public static boolean isFreeSpace(
             Vector2 position, List<Organism> organisms, List<Organism> newOrganisms, int multiplier) {
         return IntStream.range(1, 10)
-                .mapToObj(i -> getRandomDirection(position, i, multiplier))
+                .mapToObj(i -> getDirection(position, i, multiplier))
                 .anyMatch(newPosition -> isValidPosition(newPosition, organisms)
                         && isValidPosition(newPosition, newOrganisms)
                         && isValidDirection(newPosition));
@@ -103,33 +103,42 @@ public class CommonUtils {
         return !isFreeSpace(position, organisms, newOrganisms, multiplier);
     }
 
-    public static List<Organism> getNeighbors(Vector2 position, List<Organism> organisms, List<Organism> newOrganisms) {
-        Set<Organism> set = new HashSet<>();
+    public static List<Organism> getNeighbors(
+            Vector2 position, List<Organism> organisms, List<Organism> newOrganisms) {
         Vector2 vector2 = new Vector2(position);
         vector2.add(-STEP, -STEP);
-        Rectangle rectangle = new Rectangle(vector2.x, vector2.y, CELL_SIZE * 3, CELL_SIZE * 3);
+        neighborsRectangle.x = vector2.x;
+        neighborsRectangle.y = vector2.y;
         List<Organism> neighbors = organisms.stream()
-                .filter(organism -> !organism.isFullySurrounded())
-                .filter(organism -> {
-                    Rectangle rect = organism.getRectangle();
-                    return rect.overlaps(rectangle);
-                }).collect(Collectors.toList());
-        set.addAll(neighbors);
+//                .filter(organism -> !organism.isFullySurrounded())
+                .filter(organism -> neighborsRectangle.overlaps(organism.getUpdatedRectangle()))
+                .collect(Collectors.toList());
         if (newOrganisms != null) {
             List<Organism> newNeighbors = newOrganisms.stream()
-                    .filter(organism -> !organism.isFullySurrounded())
-                    .filter(organism -> {
-                        Rectangle rect = organism.getRectangle();
-                        return rect.overlaps(rectangle);
-                    }).collect(Collectors.toList());
-            set.addAll(newNeighbors);
+                    .filter(organism -> neighborsRectangle.overlaps(organism.getUpdatedRectangle()))
+                    .collect(Collectors.toList());
+            neighbors.addAll(newNeighbors);
         }
-//        if (set.size() > 9) {
-//            Gdx.app.log("MyTag 0", String.valueOf(set.size()));
-//            Gdx.app.log("MyTag 1", position.toString());
-//            Gdx.app.log("MyTag 2", rectangle.toString());
-//            set.forEach(n -> Gdx.app.log("MyTag", n.getRectangle().toString()));
-//        }
-        return new ArrayList<>(set);
+        IntStream.range(1, 10)
+                .mapToObj(i -> CommonUtils.getDirection(position, i))
+                .filter(CommonUtils::isNotValidDirection)
+                .forEach(outOfBorder -> neighbors.add(new Organism(true)));
+        return neighbors;
+    }
+
+    private long updateNeighbors(Vector2 position) {
+        return IntStream.range(1, 10)
+                .mapToObj(i -> CommonUtils.getDirection(position, i))
+                .filter(CommonUtils::isNotValidDirection)
+                .count();
+    }
+
+    public static void setInactiveOrganisms(List<Organism> organisms) {
+        organisms.stream()
+                .filter(org -> org.getNeighbors().size() >= 8)
+                .filter(org -> org.getNeighbors().stream()
+                        .map(Organism::getNeighbors)
+                        .allMatch(ns -> ns.size() >= 8))
+                .forEach(org -> org.setActive(false));
     }
 }

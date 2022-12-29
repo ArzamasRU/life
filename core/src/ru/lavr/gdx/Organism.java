@@ -5,7 +5,6 @@ import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
 import static ru.lavr.gdx.constants.Constant.MAX_MOMENTUM;
 import static ru.lavr.gdx.constants.Constant.MOMENTUM;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -17,19 +16,17 @@ import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.utils.CommonUtils;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Organism {
+    private final List<Organism> neighbors = new ArrayList<>();
+    //    каждый раз перед использованием назначать x и y
+    private final Rectangle rectangle = new Rectangle(0, 0, CELL_SIZE, CELL_SIZE);
+
     private Vector2 position = new Vector2();
     private Texture texture;
-
-    private Rectangle rectangle = new Rectangle();
-
-    private boolean fullySurrounded;
-    private final Set<Organism> neighbors = new HashSet<>();
-
+    private boolean outOfBorder;
+    public boolean active = true;
     private int momentum = 0;
 
     public Organism() {
@@ -39,11 +36,10 @@ public class Organism {
         texture = new Texture(pixmap);
         Vector2 randomDirection = CommonUtils.getRandomPosition();
         position.set(randomDirection);
-        rectangle.x = randomDirection.x;
-        rectangle.y = randomDirection.y;
-        rectangle.width = CELL_SIZE;
-        rectangle.height = CELL_SIZE;
-        Gdx.app.log("MyTag", position.x + " " + position.y);
+    }
+
+    public Organism(boolean outOfBorder) {
+        this.outOfBorder = true;
     }
 
     public Organism(List<Organism> organisms) {
@@ -56,10 +52,6 @@ public class Organism {
             randomPosition = CommonUtils.getRandomPosition();
         } while (CommonUtils.isNotValidPosition(randomPosition, organisms));
         position.set(randomPosition);
-        rectangle.x = randomPosition.x;
-        rectangle.y = randomPosition.y;
-        rectangle.width = CELL_SIZE;
-        rectangle.height = CELL_SIZE;
         List<Organism> neighbors = CommonUtils.getNeighbors(this.position, organisms, null);
         neighbors.stream().map(Organism::getNeighbors).forEach(ns -> ns.add(this));
         this.neighbors.addAll(neighbors);
@@ -71,14 +63,9 @@ public class Organism {
         pixmap.fillRectangle(0, 0, CELL_SIZE, CELL_SIZE);
         texture = new Texture(pixmap);
         this.position.set(position);
-        rectangle.x = position.x;
-        rectangle.y = position.y;
-        rectangle.width = CELL_SIZE;
-        rectangle.height = CELL_SIZE;
         List<Organism> neighbors = CommonUtils.getNeighbors(this.position, organisms, newOrganisms);
         neighbors.stream().map(Organism::getNeighbors).forEach(ns -> ns.add(this));
         this.neighbors.addAll(neighbors);
-
     }
 
     public void render(Batch batch) {
@@ -91,17 +78,6 @@ public class Organism {
 
     public void move(List<Organism> organisms, List<Organism> newOrganisms, SpriteBatch batch) {
         if (!CommonUtils.isFreeSpace(position, organisms, newOrganisms)) {
-            Gdx.app.log("MyTag", position.toString());
-//            organisms.stream()
-//                    .filter(organism -> organisms.stream()
-//                            .anyMatch(org -> {
-//                                Vector2 position1 = organism.getPosition();
-//                                Rectangle rectangle1 = new Rectangle(position1.x, position1.y, CELL_SIZE, CELL_SIZE);
-//                                Vector2 position2 = org.getPosition();
-//                                Rectangle rectangle2 = new Rectangle(position2.x, position2.y, CELL_SIZE, CELL_SIZE);
-//                                return rectangle1.overlaps(rectangle2) && !organism.equals(org);
-//                            }))
-//                    .forEach(organism -> Gdx.app.log("MyTag 111 ", organism.toString()));
             return;
         }
         Vector2 randomPosition;
@@ -109,44 +85,42 @@ public class Organism {
             if (isMomentumChanged()) {
                 int randomDirection;
                 randomDirection = CommonUtils.getRandomDirection();
-                randomPosition = CommonUtils.getRandomDirection(position, randomDirection);
+                randomPosition = CommonUtils.getDirection(position, randomDirection);
                 momentum = randomDirection;
             } else {
-                randomPosition = CommonUtils.getRandomDirection(position, momentum);
+                randomPosition = CommonUtils.getDirection(position, momentum);
             }
         } while (CommonUtils.isNotValidPosition(randomPosition, organisms)
                 || CommonUtils.isNotValidDirection(randomPosition));
-        rectangle.x = randomPosition.x;
-        rectangle.y = randomPosition.y;
         position.set(randomPosition);
     }
 
     public Organism division(List<Organism> organisms, List<Organism> newOrganisms, Batch batch) {
-        if (fullySurrounded) {
-            return null;
-        }
-        if (neighbors.size() >= 9) {
-            fullySurrounded = true;
+        if (neighbors.size() >= 8) {
             return null;
         }
         Vector2 randomPosition;
         int multiplier = 1;
-        if (CommonUtils.isNotFreeSpace(position, new ArrayList<>(neighbors), newOrganisms, multiplier)) {
-            return null;
-        }
-//        while (CommonUtils.isNotFreeSpace(position, organisms, newOrganisms, multiplier)) {
+//        if (CommonUtils.isNotFreeSpace(position, neighbors, newOrganisms, multiplier)) {
+//            fullySurrounded = true;
+//            return null;
+//        }
+
+////        while (CommonUtils.isNotFreeSpace(position, organisms, newOrganisms, multiplier)) {
 //            multiplier++;
 //            if (STEP * multiplier > 30) {
 //                return null;
 //            }
 //        }
         do {
-            randomPosition = CommonUtils.getRandomDirection(position, CommonUtils.getRandomDirection(), multiplier);
-        } while (CommonUtils.isNotValidPosition(randomPosition, new ArrayList<>(neighbors))
+            randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection(), multiplier);
+        } while (CommonUtils.isNotValidPosition(randomPosition,
+//                organisms.stream().filter(Organism::isActive).collect(Collectors.toList())
+                organisms
+        )
+                || CommonUtils.isNotValidPosition(randomPosition, newOrganisms)
                 || CommonUtils.isNotValidDirection(randomPosition));
-        Organism organism = new Organism(randomPosition, organisms, newOrganisms);
-        organism.render(batch);
-        return organism;
+        return new Organism(randomPosition, organisms, newOrganisms);
     }
 
     private boolean isMomentumChanged() {
@@ -157,28 +131,22 @@ public class Organism {
         return random > MOMENTUM;
     }
 
-    public Rectangle getRectangle() {
-        return rectangle;
-    }
-
-    public Set<Organism> getNeighbors() {
+    public List<Organism> getNeighbors() {
         return neighbors;
     }
 
-    public boolean isFullySurrounded() {
-        return fullySurrounded;
+    public Rectangle getUpdatedRectangle() {
+        this.rectangle.x = this.position.x;
+        this.rectangle.y = this.position.y;
+        return this.rectangle;
     }
 
-    public Vector2 getPosition() {
-        return position;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
-    public void setPosition(Vector2 position) {
-        this.position = position;
-    }
-
-    public void setRectangle(Rectangle rectangle) {
-        this.rectangle = rectangle;
+    public boolean isActive() {
+        return active;
     }
 
     @Override
@@ -187,20 +155,5 @@ public class Organism {
                 "position=" + position +
                 ", rectangle=" + rectangle +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Organism organism = (Organism) o;
-
-        return position.equals(organism.position);
-    }
-
-    @Override
-    public int hashCode() {
-        return position.hashCode();
     }
 }
