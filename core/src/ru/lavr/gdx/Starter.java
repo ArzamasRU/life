@@ -13,24 +13,13 @@ import java.util.stream.IntStream;
 
 public class Starter extends ApplicationAdapter {
     SpriteBatch batch;
-    List<Organism> activeOrganisms;
     List<Organism> allOrganisms = new ArrayList<>();
-    List<Organism> bufferOrganisms = new ArrayList<>();
 
     @Override
     public void create() {
         Gdx.app.setLogLevel(Application.LOG_INFO);
         batch = new SpriteBatch();
         IntStream.range(0, 1).forEach(i -> allOrganisms.add(new Organism(allOrganisms)));
-        activeOrganisms = new ArrayList<>(allOrganisms);
-//        new Thread(() -> {
-//            while (true) {
-//                List<Organism> all = new ArrayList<>(allOrganisms);
-//                bufferOrganisms = all.stream()
-//                        .filter(org -> org.getNeighbors().size() < 8)
-//                        .collect(Collectors.toList());
-//            }
-//        }).start();
     }
 
     @Override
@@ -64,7 +53,6 @@ public class Starter extends ApplicationAdapter {
 //                            }))
 //                    .forEach(organisms -> Gdx.app.log("MyTag 111 ", organisms.toString()));
         }
-//        activeOrganisms = new ArrayList<>(bufferOrganisms);
 
         CommonUtils.setInactiveOrganisms(allOrganisms);
         Gdx.app.log("MyTag", String.valueOf(allOrganisms.size()));
