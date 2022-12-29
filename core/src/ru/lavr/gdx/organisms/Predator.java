@@ -21,28 +21,35 @@ public class Predator extends Organism {
         texture = new Texture(pixmap);
     }
 
-    public Predator(List<Organism> herbivoreOrganisms, List<Organism> predatorOrganisms) {
-        super(texture, herbivoreOrganisms, predatorOrganisms);
-    }
+//    public Predator(List<Organism> herbivoreOrganisms, List<Organism> predatorOrganisms) {
+//        super(texture, herbivoreOrganisms, predatorOrganisms);
+//    }
 
-    public Predator(Vector2 position, List<Organism> organisms, List<Organism> newOrganisms) {
-        super(texture, position, organisms, newOrganisms);
+//    public Predator(Vector2 position, List<Organism> organisms, List<Organism> newOrganisms) {
+//        super(texture, position, organisms, newOrganisms);
+//    }
+
+    @Override
+    public void move(List<Organism> organisms, List<Organism> newOrganisms) {
+
     }
 
     @Override
     public void division() {
-        Vector2 randomPosition;
-        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
-        List<Organism> newPredators = organismHolder.getNewPredators();
-        List<Organism> predators = organismHolder.getPredators();
-        while (CommonUtils.isNotFreeSpace(position, newPredators)) {
-            return;
-        }
-        do {
-            randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
-        } while (CommonUtils.isNotValidPosition(randomPosition, predators)
-                || CommonUtils.isNotValidPosition(randomPosition, newPredators)
-                || CommonUtils.isNotValidDirection(randomPosition));
-        newPredators.add(new Predator(randomPosition, predators, newPredators));
+//        Vector2 randomPosition;
+//        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+//        List<Organism> newPredators = organismHolder.getNewPredators();
+//        List<Organism> predators = organismHolder.getPredators();
+//        if (CommonUtils.isNotFreeSpace(position)) {
+//            return;
+//        }
+//        do {
+//            randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
+//        } while (CommonUtils.isNotValidPosition(randomPosition, predators)
+//                || CommonUtils.isNotValidPosition(randomPosition, newPredators)
+//                || CommonUtils.isNotValidPosition(randomPosition, newasdors)
+//                || CommonUtils.isNotValidPosition(randomPosition, newPredasds)
+//                || CommonUtils.isNotValidDirection(randomPosition));
+//        newPredators.add(new Predator(randomPosition, predators, newPredators));
     }
 }

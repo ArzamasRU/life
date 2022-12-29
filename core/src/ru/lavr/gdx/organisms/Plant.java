@@ -26,27 +26,70 @@ public class Plant extends Organism {
         super(outOfBorder);
     }
 
-    public Plant(List<Organism> plantOrganisms) {
-        super(texture, plantOrganisms);
+    public Plant() {
+        super(texture);
+        Vector2 randomPosition;
+        List<Organism> plants = OrganismHolder.getOrganismHolder().getPlants();
+        do {
+            randomPosition = CommonUtils.getRandomPosition();
+        } while (CommonUtils.isNotValidPosition(randomPosition, plants));
+        this.position = randomPosition;
+        updateNeighbors(randomPosition);
     }
 
-    public Plant(Vector2 position, List<Organism> organisms, List<Organism> newOrganisms) {
-        super(texture, position, organisms, newOrganisms);
+    public Plant(Vector2 position) {
+        super(texture);
+        this.position = position;
+        updateNeighbors(position);
+    }
+
+    public void move(List<Organism> organisms, List<Organism> newOrganisms) {
+//        if (!CommonUtils.isFreeSpace(position, organisms, newOrganisms)) {
+//            return;
+//        }
+//        Vector2 randomPosition;
+//        do {
+//            if (isMomentumChanged()) {
+//                int randomDirection;
+//                randomDirection = CommonUtils.getRandomDirection();
+//                randomPosition = CommonUtils.getDirection(position, randomDirection);
+//                momentum = randomDirection;
+//            } else {
+//                randomPosition = CommonUtils.getDirection(position, momentum);
+//            }
+//        } while (CommonUtils.isNotValidPosition(randomPosition, organisms)
+//                || CommonUtils.isNotValidDirection(randomPosition));
+//        position.set(randomPosition);
     }
 
     public void division() {
         Vector2 randomPosition;
-        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
-        List<Organism> newPlants = organismHolder.getNewPlants();
-        List<Organism> plants = organismHolder.getPlants();
         if (neighbors.size() >= 8) {
             return;
         }
         do {
             randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
-        } while (CommonUtils.isNotValidPosition(randomPosition, plants)
-                || CommonUtils.isNotValidPosition(randomPosition, newPlants)
-                || CommonUtils.isNotValidDirection(randomPosition));
-        newPlants.add(new Plant(randomPosition, plants, newPlants));
+        } while (isValidPosition(randomPosition, 1));
+        List<Organism> newPlants = OrganismHolder.getOrganismHolder().getNewPlants();
+        newPlants.add(new Plant(randomPosition));
+    }
+
+    @Override
+    public boolean isValidPosition(Vector2 position, int multiplier) {
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        List<Organism> newPlants = organismHolder.getNewPlants();
+        List<Organism> plants = organismHolder.getPlants();
+        return CommonUtils.isNotValidPosition(position, plants)
+                || CommonUtils.isNotValidPosition(position, newPlants)
+                || CommonUtils.isNotValidDirection(position);
+    }
+
+    private void updateNeighbors(Vector2 position) {
+        List<Organism> neighbors = CommonUtils.getNeighbors(position);
+        neighbors.stream()
+                .filter(Organism::isNotOutOfBorder)
+                .map(Organism::getNeighbors)
+                .forEach(ns -> ns.add(this));
+        this.neighbors.addAll(neighbors);
     }
 }

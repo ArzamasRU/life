@@ -29,9 +29,9 @@ public class Starter extends ApplicationAdapter {
         plants = organismHolder.getPlants();
         herbivores = organismHolder.getHerbivores();
         predators = organismHolder.getPredators();
-        IntStream.range(0, 100).forEach(i -> plants.add(new Plant(plants)));
-        IntStream.range(0, 100).forEach(i -> herbivores.add(new Herbivore(herbivores, predators)));
-        IntStream.range(0, 100).forEach(i -> predators.add(new Predator(herbivores, predators)));
+        IntStream.range(0, 100).forEach(i -> plants.add(new Plant()));
+//        IntStream.range(0, 100).forEach(i -> herbivores.add(new Herbivore(herbivores, predators)));
+//        IntStream.range(0, 100).forEach(i -> predators.add(new Predator(herbivores, predators)));
     }
 
     @Override
@@ -39,9 +39,9 @@ public class Starter extends ApplicationAdapter {
         ScreenUtils.clear(1, 1, 1, 1);
         batch.begin();
 
-        herbivores.forEach(organism -> organism.render(batch));
-        predators.forEach(organism -> organism.render(batch));
         plants.forEach(organism -> organism.render(batch));
+//        herbivores.forEach(organism -> organism.render(batch));
+//        predators.forEach(organism -> organism.render(batch));
 
         if (plants.size() < 5000) {
             plants.stream()

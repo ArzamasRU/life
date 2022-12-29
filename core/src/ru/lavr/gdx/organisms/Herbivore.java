@@ -18,34 +18,42 @@ public class Herbivore extends Organism {
     static {
         pixmap = new Pixmap(CELL_SIZE, CELL_SIZE, RGBA8888);
         pixmap.setColor(Color.FOREST);
-        pixmap.fillRectangle(0,0,CELL_SIZE,CELL_SIZE);
+        pixmap.fillRectangle(0, 0, CELL_SIZE, CELL_SIZE);
         texture = new Texture(pixmap);
     }
 
-    public Herbivore(List<Organism> herbivoreOrganisms, List<Organism> predatorOrganisms) {
-        super(texture, herbivoreOrganisms, predatorOrganisms);
+    public Herbivore() {
+        super(texture);
+        Vector2 randomPosition;
+        List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
+        List<Organism> predators = OrganismHolder.getOrganismHolder().getPredators();
+        do {
+            randomPosition = CommonUtils.getRandomPosition();
+        } while (CommonUtils.isNotValidPosition(randomPosition, herbivores)
+                || CommonUtils.isNotValidPosition(randomPosition, predators));
+        this.position = randomPosition;
     }
 
-    public Herbivore(Vector2 position, List<Organism> organisms, List<Organism> newOrganisms) {
-        super(texture, position, organisms, newOrganisms);
+    public Herbivore(Vector2 position) {
+
+        super(texture);
+    }
+
+    @Override
+    public void move(List<Organism> organisms, List<Organism> newOrganisms) {
+
     }
 
     @Override
     public void division() {
         Vector2 randomPosition;
-        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
-        List<Organism> newHerbivores = organismHolder.getNewHerbivores();
-        List<Organism> newPredators = organismHolder.getNewPredators();
-        List<Organism> herbivores = organismHolder.getHerbivores();
-        List<Organism> predators = organismHolder.getPredators();
-        if (CommonUtils.isNotFreeSpace(position, newHerbivores)) {
+        if (CommonUtils.isNotFreeSpace(position)) {
             return;
         }
         do {
             randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
-        } while (CommonUtils.isNotValidPosition(randomPosition, herbivores)
-                || CommonUtils.isNotValidPosition(randomPosition, newHerbivores)
-                || CommonUtils.isNotValidDirection(randomPosition));
-        newHerbivores.add(new Herbivore(randomPosition, herbivores, newHerbivores));
+        } while (isValidPosition(randomPosition, 1));
+        List<Organism> newHerbivores = OrganismHolder.getOrganismHolder().getNewHerbivores();
+        newHerbivores.add(new Herbivore(randomPosition));
     }
 }

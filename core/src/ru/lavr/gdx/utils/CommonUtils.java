@@ -100,35 +100,42 @@ public class CommonUtils {
                         && isValidDirection(newPosition));
     }
 
-    public static boolean isFreeSpace(Vector2 position, List<Organism> newOrganisms, int multiplier) {
-        List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
-        List<Organism> predators = OrganismHolder.getOrganismHolder().getPredators();
+    public static boolean isFreeSpace(Vector2 position, int multiplier) {
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        List<Organism> newHerbivores = organismHolder.getNewHerbivores();
+        List<Organism> newPredators = organismHolder.getNewPredators();
+        List<Organism> herbivores = organismHolder.getHerbivores();
+        List<Organism> predators = organismHolder.getPredators();
         return IntStream.range(1, 10)
                 .mapToObj(i -> getDirection(position, i, multiplier))
                 .anyMatch(newPosition -> isValidPosition(newPosition, herbivores)
+                        && isValidPosition(newPosition, newHerbivores)
                         && isValidPosition(newPosition, predators)
-                        && isValidPosition(newPosition, newOrganisms)
+                        && isValidPosition(newPosition, newPredators)
                         && isValidDirection(newPosition));
     }
 
-    public static boolean isNotFreeSpace(Vector2 position, List<Organism> newOrganisms) {
-        return !isFreeSpace(position, newOrganisms, 1);
-    }
-    public static boolean isNotFreeSpace(Vector2 position, List<Organism> newOrganisms, int multiplier) {
-        return !isFreeSpace(position, newOrganisms, multiplier);
+    public static boolean isNotFreeSpace(Vector2 position) {
+        return !isFreeSpace(position, 1);
     }
 
-    public static List<Organism> getNeighbors(
-            Vector2 position, List<Organism> organisms, List<Organism> newOrganisms) {
+    public static boolean isNotFreeSpace(Vector2 position, int multiplier) {
+        return !isFreeSpace(position, multiplier);
+    }
+
+    public static List<Organism> getNeighbors(Vector2 position) {
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        List<Organism> newPlants = organismHolder.getNewPlants();
+        List<Organism> plants = organismHolder.getPlants();
         Vector2 vector2 = new Vector2(position);
         vector2.add(-STEP, -STEP);
         neighborsRectangle.x = vector2.x;
         neighborsRectangle.y = vector2.y;
-        List<Organism> neighbors = organisms.stream()
+        List<Organism> neighbors = plants.stream()
                 .filter(organism -> neighborsRectangle.overlaps(organism.getUpdatedRectangle()))
                 .collect(Collectors.toList());
-        if (newOrganisms != null) {
-            neighbors.addAll(newOrganisms.stream()
+        if (!newPlants.isEmpty()) {
+            neighbors.addAll(newPlants.stream()
                     .filter(organism -> neighborsRectangle.overlaps(organism.getUpdatedRectangle()))
                     .collect(Collectors.toList()));
         }

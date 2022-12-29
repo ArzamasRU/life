@@ -1,12 +1,9 @@
 package ru.lavr.gdx.organisms;
 
-import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
 import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
 import static ru.lavr.gdx.constants.Constant.MAX_MOMENTUM;
 import static ru.lavr.gdx.constants.Constant.MOMENTUM;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.MathUtils;
@@ -22,52 +19,48 @@ public abstract class Organism {
     //    каждый раз перед использованием назначать x и y
     private final Rectangle rectangle = new Rectangle(0, 0, CELL_SIZE, CELL_SIZE);
 
-    protected Vector2 position = new Vector2();
+    protected Vector2 position;
     private Texture texture;
     private boolean outOfBorder;
     public boolean active = true;
     private int momentum = 0;
+
+    public Organism() {
+    }
 
     public Organism(boolean outOfBorder) {
         this.active = false;
         this.outOfBorder = outOfBorder;
     }
 
-    public Organism(Texture texture, List<Organism> plantOrganisms) {
-        Vector2 randomPosition;
+    public Organism(Texture texture) {
         this.texture = texture;
-        do {
-            randomPosition = CommonUtils.getRandomPosition();
-        } while (CommonUtils.isNotValidPosition(randomPosition, plantOrganisms));
-        position.set(randomPosition);
-        List<Organism> neighbors = CommonUtils.getNeighbors(this.position, plantOrganisms, null);
-        neighbors.stream()
-                .filter(Organism::isNotOutOfBorder)
-                .map(Organism::getNeighbors)
-                .forEach(ns -> ns.add(this));
-        this.neighbors.addAll(neighbors);
     }
 
-    public Organism(Texture texture, Vector2 position, List<Organism> plantOrganisms, List<Organism> newPlants) {
-        this.texture = texture;
-        this.position.set(position);
-        List<Organism> neighbors = CommonUtils.getNeighbors(this.position, plantOrganisms, newPlants);
-        neighbors.stream()
-                .filter(Organism::isNotOutOfBorder)
-                .map(Organism::getNeighbors)
-                .forEach(ns -> ns.add(this));
-        this.neighbors.addAll(neighbors);
-    }
+//    public Organism(Texture texture, List<Organism> plantOrganisms) {
+//        Vector2 randomPosition;
+//        this.texture = texture;
+//        do {
+//            randomPosition = CommonUtils.getRandomPosition();
+//        } while (CommonUtils.isNotValidPosition(randomPosition, plantOrganisms));
+//        position.set(randomPosition);
+//        List<Organism> neighbors = CommonUtils.getNeighbors(this.position, plantOrganisms, null);
+//        neighbors.stream()
+//                .filter(Organism::isNotOutOfBorder)
+//                .map(Organism::getNeighbors)
+//                .forEach(ns -> ns.add(this));
+//        this.neighbors.addAll(neighbors);
+//    }
 
-    public Organism(Texture texture, List<Organism> herbivoreOrganisms, List<Organism> predatorOrganisms) {
-        Vector2 randomPosition;
-        this.texture = texture;
-        do {
-            randomPosition = CommonUtils.getRandomPosition();
-        } while (CommonUtils.isNotValidPosition(randomPosition, herbivoreOrganisms)
-                || CommonUtils.isNotValidPosition(randomPosition, predatorOrganisms));
-        position.set(randomPosition);
-    }
+//    public Organism(Texture texture, List<Organism> herbivoreOrganisms, List<Organism> predatorOrganisms) {
+//        Vector2 randomPosition;
+//        this.texture = texture;
+//        do {
+//            randomPosition = CommonUtils.getRandomPosition();
+//        } while (CommonUtils.isNotValidPosition(randomPosition, herbivoreOrganisms)
+//                || CommonUtils.isNotValidPosition(randomPosition, predatorOrganisms));
+//        position.set(randomPosition);
+//    }
 
     public void render(Batch batch) {
         batch.draw(texture, position.x, position.y);
@@ -77,23 +70,19 @@ public abstract class Organism {
         texture.dispose();
     }
 
-    public void move(List<Organism> organisms, List<Organism> newOrganisms) {
-        if (!CommonUtils.isFreeSpace(position, organisms, newOrganisms)) {
-            return;
-        }
-        Vector2 randomPosition;
-        do {
-            if (isMomentumChanged()) {
-                int randomDirection;
-                randomDirection = CommonUtils.getRandomDirection();
-                randomPosition = CommonUtils.getDirection(position, randomDirection);
-                momentum = randomDirection;
-            } else {
-                randomPosition = CommonUtils.getDirection(position, momentum);
-            }
-        } while (CommonUtils.isNotValidPosition(randomPosition, organisms)
-                || CommonUtils.isNotValidDirection(randomPosition));
-        position.set(randomPosition);
+    public abstract void move(List<Organism> organisms, List<Organism> newOrganisms);
+
+    public boolean isValidPosition(Vector2 position, int multiplier) {
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        List<Organism> newHerbivores = organismHolder.getNewHerbivores();
+        List<Organism> newPredators = organismHolder.getNewPredators();
+        List<Organism> herbivores = organismHolder.getHerbivores();
+        List<Organism> predators = organismHolder.getPredators();
+        return CommonUtils.isNotValidPosition(position, herbivores)
+                || CommonUtils.isNotValidPosition(position, newHerbivores)
+                || CommonUtils.isNotValidPosition(position, predators)
+                || CommonUtils.isNotValidPosition(position, newPredators)
+                || CommonUtils.isNotValidDirection(position);
     }
 
     public abstract void division();
