@@ -41,20 +41,8 @@ public class Starter extends ApplicationAdapter {
                         }
                     });
             allOrganisms.addAll(newOrganisms);
-        } else {
-//            organisms.stream()
-//                    .filter(organism -> organisms.stream()
-//                            .anyMatch(org -> {
-//                                Vector2 position1 = organism.getPosition();
-//                                Rectangle rectangle1 = new Rectangle(position1.x, position1.y, CELL_SIZE, CELL_SIZE);
-//                                Vector2 position2 = org.getPosition();
-//                                Rectangle rectangle2 = new Rectangle(position2.x, position2.y, CELL_SIZE, CELL_SIZE);
-//                                return rectangle1.overlaps(rectangle2) && !organism.equals(org);
-//                            }))
-//                    .forEach(organisms -> Gdx.app.log("MyTag 111 ", organisms.toString()));
         }
-
-        CommonUtils.setInactiveOrganisms(allOrganisms);
+//        CommonUtils.setInactiveOrganisms(allOrganisms);
         Gdx.app.log("MyTag", String.valueOf(allOrganisms.size()));
         batch.end();
     }

@@ -101,12 +101,7 @@ public class Organism {
         }
         Vector2 randomPosition;
         int multiplier = 1;
-//        if (CommonUtils.isNotFreeSpace(position, neighbors, newOrganisms, multiplier)) {
-//            fullySurrounded = true;
-//            return null;
-//        }
-
-////        while (CommonUtils.isNotFreeSpace(position, organisms, newOrganisms, multiplier)) {
+//        while (CommonUtils.isNotFreeSpace(position, organisms, newOrganisms, multiplier)) {
 //            multiplier++;
 //            if (STEP * multiplier > 30) {
 //                return null;
