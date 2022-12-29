@@ -30,16 +30,16 @@ public class Herbivore extends Organism {
     }
 
     @Override
-    public Organism division(List<Organism> organisms, List<Organism> newOrganisms) {
-        Vector2 randomPosition;
-        while (CommonUtils.isNotFreeSpace(position, organisms, newOrganisms)) {
-            return null;
-        }
-        do {
-            randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
-        } while (CommonUtils.isNotValidPosition(randomPosition, organisms)
-                || CommonUtils.isNotValidPosition(randomPosition, newOrganisms)
-                || CommonUtils.isNotValidDirection(randomPosition));
-        return new Herbivore(randomPosition, organisms, newOrganisms);
+    public void division(List<Organism> newHerbivores) {
+//        Vector2 randomPosition;
+//        while (CommonUtils.isNotFreeSpace(position, organisms, newOrganisms)) {
+//            return;
+//        }
+//        do {
+//            randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
+//        } while (CommonUtils.isNotValidPosition(randomPosition, organisms)
+//                || CommonUtils.isNotValidPosition(randomPosition, newOrganisms)
+//                || CommonUtils.isNotValidDirection(randomPosition));
+//        return new Herbivore(randomPosition, organisms, newOrganisms);
     }
 }

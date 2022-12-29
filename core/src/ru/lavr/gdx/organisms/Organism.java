@@ -43,7 +43,19 @@ public abstract class Organism {
         List<Organism> neighbors = CommonUtils.getNeighbors(this.position, plantOrganisms, null);
         neighbors.stream()
                 .filter(Organism::isNotOutOfBorder)
-                .map(Organism::getNeighbors).forEach(ns -> ns.add(this));
+                .map(Organism::getNeighbors)
+                .forEach(ns -> ns.add(this));
+        this.neighbors.addAll(neighbors);
+    }
+
+    public Organism(Texture texture, Vector2 position, List<Organism> plantOrganisms, List<Organism> newPlants) {
+        this.texture = texture;
+        this.position.set(position);
+        List<Organism> neighbors = CommonUtils.getNeighbors(this.position, plantOrganisms, newPlants);
+        neighbors.stream()
+                .filter(Organism::isNotOutOfBorder)
+                .map(Organism::getNeighbors)
+                .forEach(ns -> ns.add(this));
         this.neighbors.addAll(neighbors);
     }
 
@@ -55,14 +67,6 @@ public abstract class Organism {
         } while (CommonUtils.isNotValidPosition(randomPosition, herbivoreOrganisms)
                 || CommonUtils.isNotValidPosition(randomPosition, predatorOrganisms));
         position.set(randomPosition);
-    }
-
-    public Organism(Texture texture, Vector2 position, List<Organism> organisms, List<Organism> newOrganisms) {
-        this.texture = texture;
-        this.position.set(position);
-        List<Organism> neighbors = CommonUtils.getNeighbors(this.position, organisms, newOrganisms);
-        neighbors.stream().map(Organism::getNeighbors).forEach(ns -> ns.add(this));
-        this.neighbors.addAll(neighbors);
     }
 
     public void render(Batch batch) {
@@ -92,7 +96,7 @@ public abstract class Organism {
         position.set(randomPosition);
     }
 
-    public abstract Organism division(List<Organism> organisms, List<Organism> newOrganisms);
+    public abstract void division(List<Organism> NewOrganisms);
 
     private boolean isMomentumChanged() {
         if (momentum == 0) {

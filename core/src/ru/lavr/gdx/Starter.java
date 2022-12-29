@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import ru.lavr.gdx.organisms.Herbivore;
 import ru.lavr.gdx.organisms.Organism;
+import ru.lavr.gdx.organisms.OrganismHolder;
 import ru.lavr.gdx.organisms.Plant;
 import ru.lavr.gdx.organisms.Predator;
 
@@ -16,47 +17,62 @@ import java.util.stream.IntStream;
 
 public class Starter extends ApplicationAdapter {
     SpriteBatch batch;
-    List<Organism> plantOrganisms = new ArrayList<>();
-    List<Organism> herbivoreOrganisms = new ArrayList<>();
-    List<Organism> predatorOrganisms = new ArrayList<>();
+    OrganismHolder organismHolder;
+    private List<Organism> plants;
+    private List<Organism> herbivores;
+    private List<Organism> predators;
+//    private List<Organism> newPlants;
+//    private List<Organism> newHerbivores;
+//    private List<Organism> newPredators;
 
     @Override
     public void create() {
         Gdx.app.setLogLevel(Application.LOG_INFO);
         batch = new SpriteBatch();
-        IntStream.range(0, 100).forEach(i -> plantOrganisms.add(new Plant(plantOrganisms)));
-        IntStream.range(0, 100).forEach(i -> plantOrganisms.add(new Herbivore(herbivoreOrganisms, predatorOrganisms)));
-        IntStream.range(0, 100).forEach(i -> plantOrganisms.add(new Predator(herbivoreOrganisms, predatorOrganisms)));
+        organismHolder = new OrganismHolder();
+        plants = organismHolder.getPlants();
+        herbivores = organismHolder.getHerbivores();
+        predators = organismHolder.getPredators();
+//        newPlants = organismHolder.getNewPlants();
+//        newHerbivores = organismHolder.getNewHerbivores();
+//        newPredators = organismHolder.getNewPredators();
+        IntStream.range(0, 100).forEach(i -> plants.add(new Plant(plants)));
+        IntStream.range(0, 100).forEach(i -> herbivores.add(new Herbivore(herbivores, predators)));
+        IntStream.range(0, 100).forEach(i -> predators.add(new Predator(herbivores, predators)));
     }
 
     @Override
     public void render() {
-        List<Organism> newOrganisms = new ArrayList<>();
+        List<Organism> newPlants = new ArrayList<>();
+        List<Organism> newHerbivores = new ArrayList<>();
+        List<Organism> newPredators = new ArrayList<>();
         ScreenUtils.clear(1, 1, 1, 1);
         batch.begin();
-        plantOrganisms.forEach(organism -> organism.render(batch));
-        herbivoreOrganisms.forEach(organism -> organism.render(batch));
-        predatorOrganisms.forEach(organism -> organism.render(batch));
+        plants.forEach(organism -> organism.render(batch));
+        herbivores.forEach(organism -> organism.render(batch));
+        predators.forEach(organism -> organism.render(batch));
 
-//        plantOrganisms.forEach(organism -> organism.division(plantOrganisms, newOrganisms));
+        if (plants.size() < 2000) {
+            plants.stream()
+                    .filter(org -> org.getNeighbors().size() < 8)
+                    .forEach(org -> org.division(newPlants));
+            plants.addAll(newPlants);
+        }
+//        if (herbivoreOrganisms.size() < 3000) {
+//            herbivoreOrganisms.forEach(organism -> organism.division(herbivoreOrganisms, newHerbivores));
+//            herbivoreOrganisms.addAll(newHerbivores);
+//        }
+//        if (predatorOrganisms.size() < 3000) {
+//            predatorOrganisms.stream()
+//                    .filter(organism -> organism.getNeighbors().size() < 8)
+//                    .forEach(organism -> organism.division(predatorOrganisms, newPredators));
+//            predatorOrganisms.addAll(newPredators);
+//        }
+
 //        herbivoreOrganisms.forEach(
 //                organism -> organism.move(plantOrganisms, herbivoreOrganisms, predatorOrganisms, newOrganisms));
 //        predatorOrganisms.forEach(organism -> organism.move(herbivoreOrganisms, predatorOrganisms, newOrganisms));
-//
-//        if (plantOrganisms.size() < 8000) {
-//            plantOrganisms.stream()
-//                    .filter(Organism::isActive)
-//                    .filter(organism -> organism.getNeighbors().size() < 8)
-//                    .forEach(organism -> {
-//                        Organism newOrganism = organism.division(plantOrganisms, newOrganisms);
-//                        if (newOrganism != null) {
-//                            newOrganisms.add(newOrganism);
-//                        }
-//                    });
-//            plantOrganisms.addAll(newOrganisms);
-//        }
-//        CommonUtils.setInactiveOrganisms(allOrganisms);
-        Gdx.app.log("MyTag", String.valueOf(plantOrganisms.size()));
+        Gdx.app.log("MyTag", String.valueOf(plants.size()));
         batch.end();
     }
 
