@@ -24,24 +24,29 @@ public class Herbivore extends Organism {
 
     public Herbivore() {
         super(texture);
-        Vector2 randomPosition;
-        List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
-        List<Organism> predators = OrganismHolder.getOrganismHolder().getPredators();
-        do {
-            randomPosition = CommonUtils.getRandomPosition();
-        } while (CommonUtils.isNotValidPosition(randomPosition, herbivores)
-                || CommonUtils.isNotValidPosition(randomPosition, predators));
-        this.position = randomPosition;
     }
 
     public Herbivore(Vector2 position) {
-
-        super(texture);
+        super(texture, position);
     }
 
     @Override
-    public void move(List<Organism> organisms, List<Organism> newOrganisms) {
-
+    public void move() {
+        if (CommonUtils.isNotFreeSpace(position)) {
+            return;
+        }
+        Vector2 randomPosition;
+        do {
+            if (isMomentumChanged()) {
+                int randomDirection;
+                randomDirection = CommonUtils.getRandomDirection();
+                randomPosition = CommonUtils.getDirection(position, randomDirection);
+                momentum = randomDirection;
+            } else {
+                randomPosition = CommonUtils.getDirection(position, momentum);
+            }
+        } while (isNotValidPosition(randomPosition, 1));
+        position.set(randomPosition);
     }
 
     @Override
@@ -52,7 +57,7 @@ public class Herbivore extends Organism {
         }
         do {
             randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
-        } while (isValidPosition(randomPosition, 1));
+        } while (isNotValidPosition(randomPosition, 1));
         List<Organism> newHerbivores = OrganismHolder.getOrganismHolder().getNewHerbivores();
         newHerbivores.add(new Herbivore(randomPosition));
     }

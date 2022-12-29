@@ -26,40 +26,18 @@ public class Plant extends Organism {
         super(outOfBorder);
     }
 
+    @Override
+    public void move() {
+    }
+
     public Plant() {
         super(texture);
-        Vector2 randomPosition;
-        List<Organism> plants = OrganismHolder.getOrganismHolder().getPlants();
-        do {
-            randomPosition = CommonUtils.getRandomPosition();
-        } while (CommonUtils.isNotValidPosition(randomPosition, plants));
-        this.position = randomPosition;
-        updateNeighbors(randomPosition);
+        updateNeighbors(this.position);
     }
 
     public Plant(Vector2 position) {
-        super(texture);
-        this.position = position;
-        updateNeighbors(position);
-    }
-
-    public void move(List<Organism> organisms, List<Organism> newOrganisms) {
-//        if (!CommonUtils.isFreeSpace(position, organisms, newOrganisms)) {
-//            return;
-//        }
-//        Vector2 randomPosition;
-//        do {
-//            if (isMomentumChanged()) {
-//                int randomDirection;
-//                randomDirection = CommonUtils.getRandomDirection();
-//                randomPosition = CommonUtils.getDirection(position, randomDirection);
-//                momentum = randomDirection;
-//            } else {
-//                randomPosition = CommonUtils.getDirection(position, momentum);
-//            }
-//        } while (CommonUtils.isNotValidPosition(randomPosition, organisms)
-//                || CommonUtils.isNotValidDirection(randomPosition));
-//        position.set(randomPosition);
+        super(texture, position);
+        updateNeighbors(this.position);
     }
 
     public void division() {
@@ -69,13 +47,13 @@ public class Plant extends Organism {
         }
         do {
             randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
-        } while (isValidPosition(randomPosition, 1));
+        } while (isNotValidPosition(randomPosition, 1));
         List<Organism> newPlants = OrganismHolder.getOrganismHolder().getNewPlants();
         newPlants.add(new Plant(randomPosition));
     }
 
     @Override
-    public boolean isValidPosition(Vector2 position, int multiplier) {
+    public boolean isNotValidPosition(Vector2 position, int multiplier) {
         OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
         List<Organism> newPlants = organismHolder.getNewPlants();
         List<Organism> plants = organismHolder.getPlants();

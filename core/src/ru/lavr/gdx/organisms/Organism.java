@@ -23,10 +23,7 @@ public abstract class Organism {
     private Texture texture;
     private boolean outOfBorder;
     public boolean active = true;
-    private int momentum = 0;
-
-    public Organism() {
-    }
+    protected int momentum = 0;
 
     public Organism(boolean outOfBorder) {
         this.active = false;
@@ -35,32 +32,17 @@ public abstract class Organism {
 
     public Organism(Texture texture) {
         this.texture = texture;
+        Vector2 randomPosition;
+        do {
+            randomPosition = CommonUtils.getRandomPosition();
+        } while (isNotValidPosition(randomPosition, 1));
+        this.position = randomPosition;
     }
 
-//    public Organism(Texture texture, List<Organism> plantOrganisms) {
-//        Vector2 randomPosition;
-//        this.texture = texture;
-//        do {
-//            randomPosition = CommonUtils.getRandomPosition();
-//        } while (CommonUtils.isNotValidPosition(randomPosition, plantOrganisms));
-//        position.set(randomPosition);
-//        List<Organism> neighbors = CommonUtils.getNeighbors(this.position, plantOrganisms, null);
-//        neighbors.stream()
-//                .filter(Organism::isNotOutOfBorder)
-//                .map(Organism::getNeighbors)
-//                .forEach(ns -> ns.add(this));
-//        this.neighbors.addAll(neighbors);
-//    }
-
-//    public Organism(Texture texture, List<Organism> herbivoreOrganisms, List<Organism> predatorOrganisms) {
-//        Vector2 randomPosition;
-//        this.texture = texture;
-//        do {
-//            randomPosition = CommonUtils.getRandomPosition();
-//        } while (CommonUtils.isNotValidPosition(randomPosition, herbivoreOrganisms)
-//                || CommonUtils.isNotValidPosition(randomPosition, predatorOrganisms));
-//        position.set(randomPosition);
-//    }
+    public Organism(Texture texture, Vector2 position) {
+        this.texture = texture;
+        this.position = position;
+    }
 
     public void render(Batch batch) {
         batch.draw(texture, position.x, position.y);
@@ -70,9 +52,9 @@ public abstract class Organism {
         texture.dispose();
     }
 
-    public abstract void move(List<Organism> organisms, List<Organism> newOrganisms);
+    public abstract void move();
 
-    public boolean isValidPosition(Vector2 position, int multiplier) {
+    public boolean isNotValidPosition(Vector2 position, int multiplier) {
         OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
         List<Organism> newHerbivores = organismHolder.getNewHerbivores();
         List<Organism> newPredators = organismHolder.getNewPredators();
@@ -87,7 +69,7 @@ public abstract class Organism {
 
     public abstract void division();
 
-    private boolean isMomentumChanged() {
+    protected boolean isMomentumChanged() {
         if (momentum == 0) {
             return true;
         }

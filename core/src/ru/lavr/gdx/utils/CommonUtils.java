@@ -87,19 +87,6 @@ public class CommonUtils {
         return !isValidDirection(vector2);
     }
 
-    public static boolean isFreeSpace(Vector2 position, List<Organism> organisms, List<Organism> newOrganisms) {
-        return isFreeSpace(position, organisms, newOrganisms, 1);
-    }
-
-    public static boolean isFreeSpace(
-            Vector2 position, List<Organism> organisms, List<Organism> newOrganisms, int multiplier) {
-        return IntStream.range(1, 10)
-                .mapToObj(i -> getDirection(position, i, multiplier))
-                .anyMatch(newPosition -> isValidPosition(newPosition, organisms)
-                        && isValidPosition(newPosition, newOrganisms)
-                        && isValidDirection(newPosition));
-    }
-
     public static boolean isFreeSpace(Vector2 position, int multiplier) {
         OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
         List<Organism> newHerbivores = organismHolder.getNewHerbivores();

@@ -29,9 +29,9 @@ public class Starter extends ApplicationAdapter {
         plants = organismHolder.getPlants();
         herbivores = organismHolder.getHerbivores();
         predators = organismHolder.getPredators();
-        IntStream.range(0, 100).forEach(i -> plants.add(new Plant()));
-//        IntStream.range(0, 100).forEach(i -> herbivores.add(new Herbivore(herbivores, predators)));
-//        IntStream.range(0, 100).forEach(i -> predators.add(new Predator(herbivores, predators)));
+        IntStream.range(0, 10).forEach(i -> plants.add(new Plant()));
+        IntStream.range(0, 10).forEach(i -> herbivores.add(new Herbivore()));
+        IntStream.range(0, 10).forEach(i -> predators.add(new Predator()));
     }
 
     @Override
@@ -40,27 +40,26 @@ public class Starter extends ApplicationAdapter {
         batch.begin();
 
         plants.forEach(organism -> organism.render(batch));
-//        herbivores.forEach(organism -> organism.render(batch));
-//        predators.forEach(organism -> organism.render(batch));
+        herbivores.forEach(organism -> organism.render(batch));
+        predators.forEach(organism -> organism.render(batch));
 
-        if (plants.size() < 5000) {
+        if (plants.size() < 1000) {
             plants.stream()
                     .filter(org -> org.getNeighbors().size() < 8)
                     .forEach(Organism::division);
         }
-//        if (herbivores.size() < 1000) {
-//            herbivores.forEach(organism -> organism.division(newHerbivores));
-//            herbivores.addAll(newHerbivores);
-//        }
-//        if (predators.size() < 1000) {
-//            predators.forEach(organism -> organism.division(newPredators));
-//            predators.addAll(newPredators);
-//        }
+        if (herbivores.size() < 100) {
+            herbivores.forEach(Organism::division);
+        }
+        if (predators.size() < 100) {
+            predators.forEach(Organism::division);
+        }
 
-//        herbivoreOrganisms.forEach(
-//                organism -> organism.move(plantOrganisms, herbivoreOrganisms, predatorOrganisms, newOrganisms));
-//        predatorOrganisms.forEach(organism -> organism.move(herbivoreOrganisms, predatorOrganisms, newOrganisms));
+        herbivores.forEach(Organism::move);
+        predators.forEach(Organism::move);
+
         CommonUtils.updateOrganisms();
+
         Gdx.app.log("MyTag", String.valueOf(plants.size()));
         Gdx.app.log("MyTag", String.valueOf(herbivores.size()));
         Gdx.app.log("MyTag", String.valueOf(predators.size()));
