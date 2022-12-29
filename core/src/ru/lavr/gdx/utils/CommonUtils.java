@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.organisms.Organism;
+import ru.lavr.gdx.organisms.OrganismHolder;
 import ru.lavr.gdx.organisms.Plant;
 
 import java.util.List;
@@ -99,14 +100,22 @@ public class CommonUtils {
                         && isValidDirection(newPosition));
     }
 
-    public static boolean isNotFreeSpace(
-            Vector2 position, List<Organism> organisms, List<Organism> newOrganisms) {
-        return !isNotFreeSpace(position, organisms, newOrganisms, 1);
+    public static boolean isFreeSpace(Vector2 position, List<Organism> newOrganisms, int multiplier) {
+        List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
+        List<Organism> predators = OrganismHolder.getOrganismHolder().getPredators();
+        return IntStream.range(1, 10)
+                .mapToObj(i -> getDirection(position, i, multiplier))
+                .anyMatch(newPosition -> isValidPosition(newPosition, herbivores)
+                        && isValidPosition(newPosition, predators)
+                        && isValidPosition(newPosition, newOrganisms)
+                        && isValidDirection(newPosition));
     }
 
-    public static boolean isNotFreeSpace(
-            Vector2 position, List<Organism> organisms, List<Organism> newOrganisms, int multiplier) {
-        return !isFreeSpace(position, organisms, newOrganisms, multiplier);
+    public static boolean isNotFreeSpace(Vector2 position, List<Organism> newOrganisms) {
+        return !isFreeSpace(position, newOrganisms, 1);
+    }
+    public static boolean isNotFreeSpace(Vector2 position, List<Organism> newOrganisms, int multiplier) {
+        return !isFreeSpace(position, newOrganisms, multiplier);
     }
 
     public static List<Organism> getNeighbors(
@@ -119,10 +128,9 @@ public class CommonUtils {
                 .filter(organism -> neighborsRectangle.overlaps(organism.getUpdatedRectangle()))
                 .collect(Collectors.toList());
         if (newOrganisms != null) {
-            List<Organism> newNeighbors = newOrganisms.stream()
+            neighbors.addAll(newOrganisms.stream()
                     .filter(organism -> neighborsRectangle.overlaps(organism.getUpdatedRectangle()))
-                    .collect(Collectors.toList());
-            neighbors.addAll(newNeighbors);
+                    .collect(Collectors.toList()));
         }
         IntStream.range(1, 10)
                 .mapToObj(i -> CommonUtils.getDirection(position, i))

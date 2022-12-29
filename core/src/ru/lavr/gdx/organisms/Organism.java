@@ -96,7 +96,7 @@ public abstract class Organism {
         position.set(randomPosition);
     }
 
-    public abstract void division(List<Organism> NewOrganisms);
+    public abstract void division(List<Organism> newOrganisms);
 
     private boolean isMomentumChanged() {
         if (momentum == 0) {

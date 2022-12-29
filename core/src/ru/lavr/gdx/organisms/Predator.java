@@ -31,15 +31,16 @@ public class Predator extends Organism {
 
     @Override
     public void division(List<Organism> newPredators) {
-//        Vector2 randomPosition;
-//        while (CommonUtils.isNotFreeSpace(position, organisms, newOrganisms)) {
-//            return;
-//        }
-//        do {
-//            randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
-//        } while (CommonUtils.isNotValidPosition(randomPosition, organisms)
-//                || CommonUtils.isNotValidPosition(randomPosition, newOrganisms)
-//                || CommonUtils.isNotValidDirection(randomPosition));
-//        return new Predator(randomPosition, organisms, newOrganisms);
+        Vector2 randomPosition;
+        List<Organism> predators = OrganismHolder.getOrganismHolder().getPredators();
+        while (CommonUtils.isNotFreeSpace(position, newPredators)) {
+            return;
+        }
+        do {
+            randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
+        } while (CommonUtils.isNotValidPosition(randomPosition, predators)
+                || CommonUtils.isNotValidPosition(randomPosition, newPredators)
+                || CommonUtils.isNotValidDirection(randomPosition));
+        newPredators.add(new Predator(randomPosition, predators, newPredators));
     }
 }

@@ -14,6 +14,7 @@ import java.util.List;
 public class Herbivore extends Organism {
     private static final Pixmap pixmap;
     private static final Texture texture;
+
     static {
         pixmap = new Pixmap(CELL_SIZE, CELL_SIZE, RGBA8888);
         pixmap.setColor(Color.FOREST);
@@ -31,15 +32,17 @@ public class Herbivore extends Organism {
 
     @Override
     public void division(List<Organism> newHerbivores) {
-//        Vector2 randomPosition;
-//        while (CommonUtils.isNotFreeSpace(position, organisms, newOrganisms)) {
-//            return;
-//        }
-//        do {
-//            randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
-//        } while (CommonUtils.isNotValidPosition(randomPosition, organisms)
-//                || CommonUtils.isNotValidPosition(randomPosition, newOrganisms)
-//                || CommonUtils.isNotValidDirection(randomPosition));
-//        return new Herbivore(randomPosition, organisms, newOrganisms);
+        Vector2 randomPosition;
+        List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
+        List<Organism> predators = OrganismHolder.getOrganismHolder().getPredators();
+        if (CommonUtils.isNotFreeSpace(position, newHerbivores)) {
+            return;
+        }
+        do {
+            randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
+        } while (CommonUtils.isNotValidPosition(randomPosition, herbivores)
+                || CommonUtils.isNotValidPosition(randomPosition, newHerbivores)
+                || CommonUtils.isNotValidDirection(randomPosition));
+        newHerbivores.add(new Herbivore(randomPosition, herbivores, newHerbivores));
     }
 }

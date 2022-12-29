@@ -17,25 +17,18 @@ import java.util.stream.IntStream;
 
 public class Starter extends ApplicationAdapter {
     SpriteBatch batch;
-    OrganismHolder organismHolder;
+    OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
     private List<Organism> plants;
     private List<Organism> herbivores;
     private List<Organism> predators;
-//    private List<Organism> newPlants;
-//    private List<Organism> newHerbivores;
-//    private List<Organism> newPredators;
 
     @Override
     public void create() {
         Gdx.app.setLogLevel(Application.LOG_INFO);
         batch = new SpriteBatch();
-        organismHolder = new OrganismHolder();
         plants = organismHolder.getPlants();
         herbivores = organismHolder.getHerbivores();
         predators = organismHolder.getPredators();
-//        newPlants = organismHolder.getNewPlants();
-//        newHerbivores = organismHolder.getNewHerbivores();
-//        newPredators = organismHolder.getNewPredators();
         IntStream.range(0, 100).forEach(i -> plants.add(new Plant(plants)));
         IntStream.range(0, 100).forEach(i -> herbivores.add(new Herbivore(herbivores, predators)));
         IntStream.range(0, 100).forEach(i -> predators.add(new Predator(herbivores, predators)));
@@ -48,31 +41,32 @@ public class Starter extends ApplicationAdapter {
         List<Organism> newPredators = new ArrayList<>();
         ScreenUtils.clear(1, 1, 1, 1);
         batch.begin();
-        plants.forEach(organism -> organism.render(batch));
+
         herbivores.forEach(organism -> organism.render(batch));
         predators.forEach(organism -> organism.render(batch));
+        plants.forEach(organism -> organism.render(batch));
 
-        if (plants.size() < 2000) {
+        if (plants.size() < 5000) {
             plants.stream()
                     .filter(org -> org.getNeighbors().size() < 8)
                     .forEach(org -> org.division(newPlants));
             plants.addAll(newPlants);
         }
-//        if (herbivoreOrganisms.size() < 3000) {
-//            herbivoreOrganisms.forEach(organism -> organism.division(herbivoreOrganisms, newHerbivores));
-//            herbivoreOrganisms.addAll(newHerbivores);
+//        if (herbivores.size() < 1000) {
+//            herbivores.forEach(organism -> organism.division(newHerbivores));
+//            herbivores.addAll(newHerbivores);
 //        }
-//        if (predatorOrganisms.size() < 3000) {
-//            predatorOrganisms.stream()
-//                    .filter(organism -> organism.getNeighbors().size() < 8)
-//                    .forEach(organism -> organism.division(predatorOrganisms, newPredators));
-//            predatorOrganisms.addAll(newPredators);
+//        if (predators.size() < 1000) {
+//            predators.forEach(organism -> organism.division(newPredators));
+//            predators.addAll(newPredators);
 //        }
 
 //        herbivoreOrganisms.forEach(
 //                organism -> organism.move(plantOrganisms, herbivoreOrganisms, predatorOrganisms, newOrganisms));
 //        predatorOrganisms.forEach(organism -> organism.move(herbivoreOrganisms, predatorOrganisms, newOrganisms));
         Gdx.app.log("MyTag", String.valueOf(plants.size()));
+        Gdx.app.log("MyTag", String.valueOf(herbivores.size()));
+        Gdx.app.log("MyTag", String.valueOf(predators.size()));
         batch.end();
     }
 
