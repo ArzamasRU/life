@@ -10,8 +10,8 @@ import ru.lavr.gdx.organisms.Organism;
 import ru.lavr.gdx.organisms.OrganismHolder;
 import ru.lavr.gdx.organisms.Plant;
 import ru.lavr.gdx.organisms.Predator;
+import ru.lavr.gdx.utils.CommonUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -36,9 +36,6 @@ public class Starter extends ApplicationAdapter {
 
     @Override
     public void render() {
-        List<Organism> newPlants = new ArrayList<>();
-        List<Organism> newHerbivores = new ArrayList<>();
-        List<Organism> newPredators = new ArrayList<>();
         ScreenUtils.clear(1, 1, 1, 1);
         batch.begin();
 
@@ -49,8 +46,7 @@ public class Starter extends ApplicationAdapter {
         if (plants.size() < 5000) {
             plants.stream()
                     .filter(org -> org.getNeighbors().size() < 8)
-                    .forEach(org -> org.division(newPlants));
-            plants.addAll(newPlants);
+                    .forEach(Organism::division);
         }
 //        if (herbivores.size() < 1000) {
 //            herbivores.forEach(organism -> organism.division(newHerbivores));
@@ -64,6 +60,7 @@ public class Starter extends ApplicationAdapter {
 //        herbivoreOrganisms.forEach(
 //                organism -> organism.move(plantOrganisms, herbivoreOrganisms, predatorOrganisms, newOrganisms));
 //        predatorOrganisms.forEach(organism -> organism.move(herbivoreOrganisms, predatorOrganisms, newOrganisms));
+        CommonUtils.updateOrganisms();
         Gdx.app.log("MyTag", String.valueOf(plants.size()));
         Gdx.app.log("MyTag", String.valueOf(herbivores.size()));
         Gdx.app.log("MyTag", String.valueOf(predators.size()));

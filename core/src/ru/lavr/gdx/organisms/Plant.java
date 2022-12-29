@@ -34,9 +34,11 @@ public class Plant extends Organism {
         super(texture, position, organisms, newOrganisms);
     }
 
-    public void division(List<Organism> newPlants) {
+    public void division() {
         Vector2 randomPosition;
-        List<Organism> plants = OrganismHolder.getOrganismHolder().getPlants();
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        List<Organism> newPlants = organismHolder.getNewPlants();
+        List<Organism> plants = organismHolder.getPlants();
         if (neighbors.size() >= 8) {
             return;
         }

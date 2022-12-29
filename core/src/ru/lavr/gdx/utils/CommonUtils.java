@@ -154,4 +154,20 @@ public class CommonUtils {
                         .allMatch(ns -> ns.size() >= 8))
                 .forEach(org -> org.setActive(false));
     }
+
+    public static void updateOrganisms() {
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        List<Organism> plants = organismHolder.getPlants();
+        List<Organism> herbivores = organismHolder.getHerbivores();
+        List<Organism> predators = organismHolder.getPredators();
+        List<Organism> newPlants = organismHolder.getNewPlants();
+        List<Organism> newHerbivores = organismHolder.getNewHerbivores();
+        List<Organism> newPredators = organismHolder.getNewPredators();
+        plants.addAll(newPlants);
+        herbivores.addAll(newHerbivores);
+        predators.addAll(newPredators);
+        newPlants.clear();
+        newHerbivores.clear();
+        newPredators.clear();
+    }
 }

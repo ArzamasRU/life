@@ -31,10 +31,13 @@ public class Herbivore extends Organism {
     }
 
     @Override
-    public void division(List<Organism> newHerbivores) {
+    public void division() {
         Vector2 randomPosition;
-        List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
-        List<Organism> predators = OrganismHolder.getOrganismHolder().getPredators();
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        List<Organism> newHerbivores = organismHolder.getNewHerbivores();
+        List<Organism> newPredators = organismHolder.getNewPredators();
+        List<Organism> herbivores = organismHolder.getHerbivores();
+        List<Organism> predators = organismHolder.getPredators();
         if (CommonUtils.isNotFreeSpace(position, newHerbivores)) {
             return;
         }

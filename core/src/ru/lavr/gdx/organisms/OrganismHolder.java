@@ -9,12 +9,36 @@ public class OrganismHolder {
     private List<Organism> plants = new ArrayList<>();
     private List<Organism> herbivores = new ArrayList<>();
     private List<Organism> predators = new ArrayList<>();
-//    private List<Organism> newPlants = new ArrayList<>();
-//    private List<Organism> newHerbivores = new ArrayList<>();
-//    private List<Organism> newPredators = new ArrayList<>();
+    private List<Organism> newPlants = new ArrayList<>();
+    private List<Organism> newHerbivores = new ArrayList<>();
+    private List<Organism> newPredators = new ArrayList<>();
 
     public static OrganismHolder getOrganismHolder() {
         return organismHolder;
+    }
+
+    public List<Organism> getNewPlants() {
+        return newPlants;
+    }
+
+    public void setNewPlants(List<Organism> newPlants) {
+        this.newPlants = newPlants;
+    }
+
+    public List<Organism> getNewHerbivores() {
+        return newHerbivores;
+    }
+
+    public void setNewHerbivores(List<Organism> newHerbivores) {
+        this.newHerbivores = newHerbivores;
+    }
+
+    public List<Organism> getNewPredators() {
+        return newPredators;
+    }
+
+    public void setNewPredators(List<Organism> newPredators) {
+        this.newPredators = newPredators;
     }
 
     public List<Organism> getPlants() {

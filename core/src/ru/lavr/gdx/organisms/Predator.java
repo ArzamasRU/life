@@ -30,9 +30,11 @@ public class Predator extends Organism {
     }
 
     @Override
-    public void division(List<Organism> newPredators) {
+    public void division() {
         Vector2 randomPosition;
-        List<Organism> predators = OrganismHolder.getOrganismHolder().getPredators();
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        List<Organism> newPredators = organismHolder.getNewPredators();
+        List<Organism> predators = organismHolder.getPredators();
         while (CommonUtils.isNotFreeSpace(position, newPredators)) {
             return;
         }
