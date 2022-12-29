@@ -10,7 +10,8 @@ import static ru.lavr.gdx.constants.Constant.UPPER_EDGE;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import ru.lavr.gdx.Organism;
+import ru.lavr.gdx.organisms.Organism;
+import ru.lavr.gdx.organisms.Plant;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -99,6 +100,11 @@ public class CommonUtils {
     }
 
     public static boolean isNotFreeSpace(
+            Vector2 position, List<Organism> organisms, List<Organism> newOrganisms) {
+        return !isNotFreeSpace(position, organisms, newOrganisms, 1);
+    }
+
+    public static boolean isNotFreeSpace(
             Vector2 position, List<Organism> organisms, List<Organism> newOrganisms, int multiplier) {
         return !isFreeSpace(position, organisms, newOrganisms, multiplier);
     }
@@ -110,7 +116,6 @@ public class CommonUtils {
         neighborsRectangle.x = vector2.x;
         neighborsRectangle.y = vector2.y;
         List<Organism> neighbors = organisms.stream()
-//                .filter(organism -> !organism.isFullySurrounded())
                 .filter(organism -> neighborsRectangle.overlaps(organism.getUpdatedRectangle()))
                 .collect(Collectors.toList());
         if (newOrganisms != null) {
@@ -122,7 +127,7 @@ public class CommonUtils {
         IntStream.range(1, 10)
                 .mapToObj(i -> CommonUtils.getDirection(position, i))
                 .filter(CommonUtils::isNotValidDirection)
-                .forEach(outOfBorder -> neighbors.add(new Organism(true)));
+                .forEach(outOfBorder -> neighbors.add(new Plant(true)));
         return neighbors;
     }
 
