@@ -34,18 +34,16 @@ public class Predator extends Organism {
         if (CommonUtils.isNotFreeSpace(position)) {
             return;
         }
-        Vector2 randomPosition;
-        do {
-            if (isMomentumChanged()) {
-                int randomDirection;
-                randomDirection = CommonUtils.getRandomDirection();
-                randomPosition = CommonUtils.getDirection(position, randomDirection);
-                momentum = randomDirection;
-            } else {
-                randomPosition = CommonUtils.getDirection(position, momentum);
-            }
-        } while (isNotValidPosition(randomPosition, 1));
-        position.set(randomPosition);
+        if (isHerbivoreClose()) {
+
+        } else {
+            randomStep();
+        }
+    }
+
+    private boolean isHerbivoreClose() {
+        List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
+        return CommonUtils.isOrganismClose(position, herbivores);
     }
 
     @Override

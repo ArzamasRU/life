@@ -44,15 +44,9 @@ public abstract class Organism {
         this.position = position;
     }
 
-    public void render(Batch batch) {
-        batch.draw(texture, position.x, position.y);
-    }
-
-    public void dispose() {
-        texture.dispose();
-    }
-
     public abstract void move();
+
+    public abstract void division();
 
     public boolean isNotValidPosition(Vector2 position, int multiplier) {
         OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
@@ -67,7 +61,28 @@ public abstract class Organism {
                 || CommonUtils.isNotValidDirection(position);
     }
 
-    public abstract void division();
+    public void render(Batch batch) {
+        batch.draw(texture, position.x, position.y);
+    }
+
+    public void dispose() {
+        texture.dispose();
+    }
+
+    protected void randomStep() {
+        Vector2 randomPosition;
+        do {
+            if (isMomentumChanged()) {
+                int randomDirection;
+                randomDirection = CommonUtils.getRandomDirection();
+                randomPosition = CommonUtils.getDirection(position, randomDirection);
+                momentum = randomDirection;
+            } else {
+                randomPosition = CommonUtils.getDirection(position, momentum);
+            }
+        } while (isNotValidPosition(randomPosition, 1));
+        position.set(randomPosition);
+    }
 
     protected boolean isMomentumChanged() {
         if (momentum == 0) {
@@ -89,14 +104,6 @@ public abstract class Organism {
 
     public void setActive(boolean active) {
         this.active = active;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public boolean isOutOfBorder() {
-        return outOfBorder;
     }
 
     public boolean isNotOutOfBorder() {

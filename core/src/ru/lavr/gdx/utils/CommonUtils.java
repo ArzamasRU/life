@@ -72,15 +72,15 @@ public class CommonUtils {
                 .noneMatch(rectangle::overlaps);
     }
 
+    public static boolean isNotValidPosition(Vector2 vector2, List<Organism> organisms) {
+        return !isValidPosition(vector2, organisms);
+    }
+
     //    проверяет не заходит ли клетка за поля
     public static boolean isValidDirection(Vector2 vector2) {
         rectangle.x = vector2.x;
         rectangle.y = vector2.y;
         return field.overlaps(rectangle);
-    }
-
-    public static boolean isNotValidPosition(Vector2 vector2, List<Organism> organisms) {
-        return !isValidPosition(vector2, organisms);
     }
 
     public static boolean isNotValidDirection(Vector2 vector2) {
@@ -100,6 +100,12 @@ public class CommonUtils {
                         && isValidPosition(newPosition, predators)
                         && isValidPosition(newPosition, newPredators)
                         && isValidDirection(newPosition));
+    }
+
+    public static boolean isOrganismClose(Vector2 position, List<Organism> organisms) {
+        return IntStream.range(1, 10)
+                .mapToObj(i -> getDirection(position, i, 1))
+                .anyMatch(newPosition -> isNotValidPosition(newPosition, organisms));
     }
 
     public static boolean isNotFreeSpace(Vector2 position) {
@@ -131,13 +137,6 @@ public class CommonUtils {
                 .filter(CommonUtils::isNotValidDirection)
                 .forEach(outOfBorder -> neighbors.add(new Plant(true)));
         return neighbors;
-    }
-
-    private long updateNeighbors(Vector2 position) {
-        return IntStream.range(1, 10)
-                .mapToObj(i -> CommonUtils.getDirection(position, i))
-                .filter(CommonUtils::isNotValidDirection)
-                .count();
     }
 
     public static void setInactiveOrganisms(List<Organism> organisms) {

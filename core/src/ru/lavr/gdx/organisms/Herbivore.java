@@ -35,18 +35,23 @@ public class Herbivore extends Organism {
         if (CommonUtils.isNotFreeSpace(position)) {
             return;
         }
-        Vector2 randomPosition;
-        do {
-            if (isMomentumChanged()) {
-                int randomDirection;
-                randomDirection = CommonUtils.getRandomDirection();
-                randomPosition = CommonUtils.getDirection(position, randomDirection);
-                momentum = randomDirection;
-            } else {
-                randomPosition = CommonUtils.getDirection(position, momentum);
-            }
-        } while (isNotValidPosition(randomPosition, 1));
-        position.set(randomPosition);
+        if (isPredatorClose()) {
+
+        } else if (isPlantClose()) {
+
+        } else {
+            randomStep();
+        }
+    }
+
+    private boolean isPredatorClose() {
+        List<Organism> predators = OrganismHolder.getOrganismHolder().getPredators();
+        return CommonUtils.isOrganismClose(position, predators);
+    }
+
+    private boolean isPlantClose() {
+        List<Organism> plants = OrganismHolder.getOrganismHolder().getPlants();
+        return CommonUtils.isOrganismClose(position, plants);
     }
 
     @Override
