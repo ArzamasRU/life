@@ -6,6 +6,7 @@ import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.utils.CommonUtils;
 
@@ -50,6 +51,11 @@ public class Plant extends Organism {
 
     @Override
     public void move() {
+    }
+
+    @Override
+    public void die() {
+        getNeighbors().forEach(neighbor -> neighbor.getNeighbors().remove(this));
     }
 
     @Override

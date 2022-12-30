@@ -16,6 +16,7 @@ import ru.lavr.gdx.organisms.Plant;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -50,8 +51,6 @@ public class CommonUtils {
             return vector2.add(+multipliedStep, +multipliedStep);
         } else if (direction == 4) {
             return vector2.add(-multipliedStep, 0);
-        } else if (direction == 5) {
-            return vector2.add(0, 0);
         } else if (direction == 6) {
             return vector2.add(+multipliedStep, 0);
         } else if (direction == 7) {
@@ -109,11 +108,35 @@ public class CommonUtils {
                 .anyMatch(newPosition -> isNotValidPosition(newPosition, organisms));
     }
 
-    public static Organism getCloseOrganism(Vector2 position, List<Organism> organisms) {
+    public static Organism getOrganism(Vector2 position, List<Organism> organisms) {
         rectangle.x = position.x;
         rectangle.y = position.y;
         return organisms.stream()
                 .filter(org -> rectangle.overlaps(org.getUpdatedRectangle()))
+                .findAny().orElse(null);
+    }
+
+    public static Organism getCloseOrganism(Vector2 position, List<Organism> organisms) {
+        return IntStream.range(1, 10)
+                .mapToObj(i -> getDirection(position, i, 1))
+                .map(newPosition -> getOrganism(newPosition, organisms))
+                .findAny().orElse(null);
+    }
+
+    public static Integer getOrganismIndex(Vector2 position, List<Organism> organisms) {
+        rectangle.x = position.x;
+        rectangle.y = position.y;
+        return IntStream.range(0, organisms.size() - 1)
+                .filter(i -> rectangle.overlaps(organisms.get(i).getUpdatedRectangle()))
+                .boxed()
+                .findAny().orElse(null);
+    }
+
+    public static Integer getCloseOrganismIndex(Vector2 position, List<Organism> organisms) {
+        return IntStream.range(1, 10)
+                .mapToObj(i -> getDirection(position, i, 1))
+                .map(newPosition -> getOrganismIndex(newPosition, organisms))
+                .filter(Objects::nonNull)
                 .findAny().orElse(null);
     }
 

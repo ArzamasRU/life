@@ -3,9 +3,11 @@ package ru.lavr.gdx.organisms;
 import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
 import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.utils.CommonUtils;
 
@@ -35,34 +37,36 @@ public class Herbivore extends Organism {
         if (CommonUtils.isNotFreeSpace(position)) {
             return;
         }
-        int predatorPosition = getPredatorClose();
+        int predatorPosition = getClosePredator();
         if (predatorPosition != 0) {
             int oppositeDirection = CommonUtils.getOppositeDirection(position, predatorPosition);
             position.set(CommonUtils.getDirection(position, oppositeDirection, 1));
             momentum = oppositeDirection;
             return;
         }
-        Organism plant = getPlantClose();
-        if (plant != null) {
-            eatOrganism(plant);
+        Integer plantIndex = getClosePlantIndex();
+        if (plantIndex != null) {
+            eatOrganism(plantIndex);
             return;
         }
         randomStep();
     }
 
-    private int getPredatorClose() {
+    private int getClosePredator() {
         List<Organism> predators = OrganismHolder.getOrganismHolder().getPredators();
         return CommonUtils.getCloseOrganismPosition(position, predators);
     }
 
-    private Organism getPlantClose() {
+    private Integer getClosePlantIndex() {
         List<Organism> plants = OrganismHolder.getOrganismHolder().getPlants();
-        return CommonUtils.getCloseOrganism(position, plants);
+        return CommonUtils.getCloseOrganismIndex(position, plants);
     }
 
-    private void eatOrganism(Organism organism) {
-        organism.dispose();
-//        organism.render(batch);
+    private void eatOrganism(int index) {
+        List<Organism> plants = OrganismHolder.getOrganismHolder().getPlants();
+        Organism plant = plants.get(index);
+        plant.die();
+        plants.remove(index);
     }
 
     @Override
@@ -76,5 +80,9 @@ public class Herbivore extends Organism {
         } while (isNotValidPosition(randomPosition, 1));
         List<Organism> newHerbivores = OrganismHolder.getOrganismHolder().getNewHerbivores();
         newHerbivores.add(new Herbivore(randomPosition));
+    }
+
+    @Override
+    public void die() {
     }
 }

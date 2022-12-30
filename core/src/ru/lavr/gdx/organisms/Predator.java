@@ -6,6 +6,7 @@ import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.utils.CommonUtils;
 
@@ -35,9 +36,9 @@ public class Predator extends Organism {
         if (CommonUtils.isNotFreeSpace(position)) {
             return;
         }
-        Organism closeHerbivore = getCloseHerbivore();
-        if (closeHerbivore != null) {
-            eatOrganism(closeHerbivore);
+        Integer herbivoreIndex = getCloseHerbivoreIndex();
+        if (herbivoreIndex != null) {
+            eatOrganism(herbivoreIndex);
             return;
         }
 //        int herbivorePosition = getCloseHerbivoreFollow();
@@ -48,9 +49,9 @@ public class Predator extends Organism {
         randomStep();
     }
 
-    private Organism getCloseHerbivore() {
+    private Integer getCloseHerbivoreIndex() {
         List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
-        return CommonUtils.getCloseOrganism(position, herbivores);
+        return CommonUtils.getCloseOrganismIndex(position, herbivores);
     }
 
     private int getCloseHerbivoreFollow() {
@@ -58,8 +59,9 @@ public class Predator extends Organism {
         return CommonUtils.getCloseOrganismPosition(position, herbivores);
     }
 
-    private void eatOrganism(Organism organism) {
-        organism.dispose();
+    private void eatOrganism(int index) {
+        List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
+        herbivores.remove(index);
     }
 
     @Override
@@ -73,5 +75,9 @@ public class Predator extends Organism {
         } while (isNotValidPosition(randomPosition, 1));
         List<Organism> newPredators = OrganismHolder.getOrganismHolder().getNewPredators();
         newPredators.add(new Predator(randomPosition));
+    }
+
+    @Override
+    public void die() {
     }
 }
