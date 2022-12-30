@@ -2,11 +2,14 @@ package ru.lavr.gdx.organisms;
 
 import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
 import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
+import static ru.lavr.gdx.constants.Constant.MAX_FULLNESS;
+import static ru.lavr.gdx.constants.Constant.READY_FOR_DIVISION;
+import static ru.lavr.gdx.constants.Constant.PLANT_DIVISION_COST;
+import static ru.lavr.gdx.constants.Constant.STEP_PLANT_FULLNESS;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.utils.CommonUtils;
 
@@ -37,20 +40,29 @@ public class Plant extends Organism {
         updateNeighbors(this.position);
     }
 
-    public void division() {
+    @Override
+    public boolean reproduce() {
         Vector2 randomPosition;
         if (neighbors.size() >= 8) {
-            return;
+            return false;
         }
         do {
             randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
         } while (isNotValidPosition(randomPosition, 1));
         List<Organism> newPlants = OrganismHolder.getOrganismHolder().getNewPlants();
         newPlants.add(new Plant(randomPosition));
+        fullness -= PLANT_DIVISION_COST;
+        return true;
     }
 
     @Override
     public void move() {
+        if (fullness < MAX_FULLNESS) {
+            fullness += STEP_PLANT_FULLNESS;
+        }
+        if (fullness >= READY_FOR_DIVISION) {
+            reproduce();
+        }
     }
 
     @Override

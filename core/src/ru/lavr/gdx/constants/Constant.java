@@ -7,6 +7,16 @@ public class Constant {
     public static final int MOMENTUM = 7;
     public static final int MAX_MOMENTUM = 10;
 
+    public static final int MAX_FULLNESS = 150;
+    public static final int READY_FOR_DIVISION = 100;
+    public static final int STEP_EXHAUSTION = 1;
+    public static final int PLANT_DIVISION_COST = 100;
+    public static final int HERBIVORE_DIVISION_COST = 50;
+    public static final int PREDATOR_DIVISION_COST = 30;
+    public static final int STEP_PLANT_FULLNESS = 3;
+    public static final int STEP_HERBIVORE_FULLNESS = 10;
+    public static final int STEP_PREDATOR_FULLNESS = 100;
+
 //    значения для desctop
     public static final int UPPER_EDGE = 720;
     public static final int RIGHT_EDGE = 1280;

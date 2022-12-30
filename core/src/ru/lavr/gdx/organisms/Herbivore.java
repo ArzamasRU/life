@@ -2,12 +2,16 @@ package ru.lavr.gdx.organisms;
 
 import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
 import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
+import static ru.lavr.gdx.constants.Constant.HERBIVORE_DIVISION_COST;
+import static ru.lavr.gdx.constants.Constant.MAX_FULLNESS;
+import static ru.lavr.gdx.constants.Constant.READY_FOR_DIVISION;
+import static ru.lavr.gdx.constants.Constant.STEP_EXHAUSTION;
+import static ru.lavr.gdx.constants.Constant.STEP_HERBIVORE_FULLNESS;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.utils.CommonUtils;
 
@@ -26,10 +30,12 @@ public class Herbivore extends Organism {
 
     public Herbivore() {
         super(texture);
+        fullness = 100;
     }
 
     public Herbivore(Vector2 position) {
         super(texture, position);
+        fullness = 100;
     }
 
     @Override
@@ -37,19 +43,15 @@ public class Herbivore extends Organism {
         if (CommonUtils.isNotFreeSpace(position)) {
             return;
         }
-        int predatorPosition = getClosePredator();
-        if (predatorPosition != 0) {
-            int oppositeDirection = CommonUtils.getOppositeDirection(position, predatorPosition);
-            position.set(CommonUtils.getDirection(position, oppositeDirection, 1));
-            momentum = oppositeDirection;
-            return;
+        fullness -= STEP_EXHAUSTION;
+//        Gdx.app.log("MyTag", String.valueOf(fullness));
+        if (!runAway()) {
+            if (!reproduce()) {
+                if (!eat()) {
+                    randomStep();
+                }
+            }
         }
-        Integer plantIndex = getClosePlantIndex();
-        if (plantIndex != null) {
-            eatOrganism(plantIndex);
-            return;
-        }
-        randomStep();
     }
 
     private int getClosePredator() {
@@ -62,24 +64,50 @@ public class Herbivore extends Organism {
         return CommonUtils.getCloseOrganismIndex(position, plants);
     }
 
-    private void eatOrganism(int index) {
-        List<Organism> plants = OrganismHolder.getOrganismHolder().getPlants();
-        Organism plant = plants.get(index);
-        plant.die();
-        plants.remove(index);
+    private boolean eat() {
+        Integer plantIndex = getClosePlantIndex();
+        if (plantIndex != null) {
+//            если в remove() передавать Integer будет вызываться метод с remove(Object), а не remove(int)
+            int index = plantIndex;
+            List<Organism> plants = OrganismHolder.getOrganismHolder().getPlants();
+            Organism plant = plants.get(index);
+            plant.die();
+            plants.remove(index);
+            if (fullness < MAX_FULLNESS) {
+                fullness += STEP_HERBIVORE_FULLNESS;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean runAway() {
+        int predatorPosition = getClosePredator();
+        if (predatorPosition != 0) {
+            int oppositeDirection = CommonUtils.getOppositeDirection(position, predatorPosition);
+            position.set(CommonUtils.getDirection(position, oppositeDirection, 1));
+            momentum = oppositeDirection;
+            return true;
+        }
+        return false;
     }
 
     @Override
-    public void division() {
-        Vector2 randomPosition;
-        if (CommonUtils.isNotFreeSpace(position)) {
-            return;
+    public boolean reproduce() {
+        if (fullness >= READY_FOR_DIVISION) {
+            Vector2 randomPosition;
+            if (CommonUtils.isNotFreeSpace(position)) {
+                return false;
+            }
+            do {
+                randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
+            } while (isNotValidPosition(randomPosition, 1));
+            List<Organism> newHerbivores = OrganismHolder.getOrganismHolder().getNewHerbivores();
+            newHerbivores.add(new Herbivore(randomPosition));
+            fullness -= HERBIVORE_DIVISION_COST;
+            return true;
         }
-        do {
-            randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
-        } while (isNotValidPosition(randomPosition, 1));
-        List<Organism> newHerbivores = OrganismHolder.getOrganismHolder().getNewHerbivores();
-        newHerbivores.add(new Herbivore(randomPosition));
+        return false;
     }
 
     @Override

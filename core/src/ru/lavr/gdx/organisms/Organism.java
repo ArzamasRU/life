@@ -6,7 +6,6 @@ import static ru.lavr.gdx.constants.Constant.MOMENTUM;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -25,6 +24,7 @@ public abstract class Organism {
     private boolean outOfBorder;
     public boolean active = true;
     protected int momentum = 0;
+    protected int fullness = 0;
 
     public Organism(boolean outOfBorder) {
         this.active = false;
@@ -47,7 +47,7 @@ public abstract class Organism {
 
     public abstract void move();
 
-    public abstract void division();
+    public abstract boolean reproduce();
 
     public boolean isNotValidPosition(Vector2 position, int multiplier) {
         OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
@@ -111,6 +111,10 @@ public abstract class Organism {
 
     public boolean isNotOutOfBorder() {
         return !outOfBorder;
+    }
+
+    public int getFullness() {
+        return fullness;
     }
 
     @Override

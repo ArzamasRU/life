@@ -229,6 +229,14 @@ public class CommonUtils {
         List<Organism> newPlants = organismHolder.getNewPlants();
         List<Organism> newHerbivores = organismHolder.getNewHerbivores();
         List<Organism> newPredators = organismHolder.getNewPredators();
+
+        herbivores.removeAll(herbivores.stream()
+                .filter(org -> org.getFullness() <= 0)
+                .collect(Collectors.toList()));
+        predators.removeAll(predators.stream()
+                .filter(org -> org.getFullness() <= 0)
+                .collect(Collectors.toList()));
+
         plants.addAll(newPlants);
         herbivores.addAll(newHerbivores);
         predators.addAll(newPredators);
