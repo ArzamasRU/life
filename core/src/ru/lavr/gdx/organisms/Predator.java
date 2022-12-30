@@ -14,10 +14,11 @@ import java.util.List;
 public class Predator extends Organism {
     private static final Pixmap pixmap;
     private static final Texture texture;
+
     static {
         pixmap = new Pixmap(CELL_SIZE, CELL_SIZE, RGBA8888);
         pixmap.setColor(Color.RED);
-        pixmap.fillRectangle(0,0,CELL_SIZE,CELL_SIZE);
+        pixmap.fillRectangle(0, 0, CELL_SIZE, CELL_SIZE);
         texture = new Texture(pixmap);
     }
 
@@ -34,16 +35,31 @@ public class Predator extends Organism {
         if (CommonUtils.isNotFreeSpace(position)) {
             return;
         }
-        if (isHerbivoreClose()) {
-
-        } else {
-            randomStep();
+        Organism closeHerbivore = getCloseHerbivore();
+        if (closeHerbivore != null) {
+            eatOrganism(closeHerbivore);
+            return;
         }
+//        int herbivorePosition = getCloseHerbivoreFollow();
+//        if (herbivorePosition != 0) {
+//            momentum = herbivorePosition;
+//            return;
+//        }
+        randomStep();
     }
 
-    private boolean isHerbivoreClose() {
+    private Organism getCloseHerbivore() {
         List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
-        return CommonUtils.isOrganismClose(position, herbivores);
+        return CommonUtils.getCloseOrganism(position, herbivores);
+    }
+
+    private int getCloseHerbivoreFollow() {
+        List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
+        return CommonUtils.getCloseOrganismPosition(position, herbivores);
+    }
+
+    private void eatOrganism(Organism organism) {
+        organism.dispose();
     }
 
     @Override

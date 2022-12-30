@@ -35,23 +35,34 @@ public class Herbivore extends Organism {
         if (CommonUtils.isNotFreeSpace(position)) {
             return;
         }
-        if (isPredatorClose()) {
-
-        } else if (isPlantClose()) {
-
-        } else {
-            randomStep();
+        int predatorPosition = getPredatorClose();
+        if (predatorPosition != 0) {
+            int oppositeDirection = CommonUtils.getOppositeDirection(position, predatorPosition);
+            position.set(CommonUtils.getDirection(position, oppositeDirection, 1));
+            momentum = oppositeDirection;
+            return;
         }
+        Organism plant = getPlantClose();
+        if (plant != null) {
+            eatOrganism(plant);
+            return;
+        }
+        randomStep();
     }
 
-    private boolean isPredatorClose() {
+    private int getPredatorClose() {
         List<Organism> predators = OrganismHolder.getOrganismHolder().getPredators();
-        return CommonUtils.isOrganismClose(position, predators);
+        return CommonUtils.getCloseOrganismPosition(position, predators);
     }
 
-    private boolean isPlantClose() {
+    private Organism getPlantClose() {
         List<Organism> plants = OrganismHolder.getOrganismHolder().getPlants();
-        return CommonUtils.isOrganismClose(position, plants);
+        return CommonUtils.getCloseOrganism(position, plants);
+    }
+
+    private void eatOrganism(Organism organism) {
+        organism.dispose();
+//        organism.render(batch);
     }
 
     @Override

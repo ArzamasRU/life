@@ -8,7 +8,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 public class DesktopLauncher {
     public static void main(String[] arg) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-        config.setForegroundFPS(30);
+        config.setForegroundFPS(10);
 //        Graphics.DisplayMode dm = Lwjgl3ApplicationConfiguration.getDisplayMode();
 //        config.setWindowedMode(dm.width / 2, dm.height / 2);
         config.setWindowedMode(1280, 720);

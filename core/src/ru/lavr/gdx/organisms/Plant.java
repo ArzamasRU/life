@@ -26,10 +26,6 @@ public class Plant extends Organism {
         super(outOfBorder);
     }
 
-    @Override
-    public void move() {
-    }
-
     public Plant() {
         super(texture);
         updateNeighbors(this.position);
@@ -50,6 +46,10 @@ public class Plant extends Organism {
         } while (isNotValidPosition(randomPosition, 1));
         List<Organism> newPlants = OrganismHolder.getOrganismHolder().getNewPlants();
         newPlants.add(new Plant(randomPosition));
+    }
+
+    @Override
+    public void move() {
     }
 
     @Override

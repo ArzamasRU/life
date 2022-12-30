@@ -14,6 +14,7 @@ import ru.lavr.gdx.organisms.Organism;
 import ru.lavr.gdx.organisms.OrganismHolder;
 import ru.lavr.gdx.organisms.Plant;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -106,6 +107,55 @@ public class CommonUtils {
         return IntStream.range(1, 10)
                 .mapToObj(i -> getDirection(position, i, 1))
                 .anyMatch(newPosition -> isNotValidPosition(newPosition, organisms));
+    }
+
+    public static Organism getCloseOrganism(Vector2 position, List<Organism> organisms) {
+        rectangle.x = position.x;
+        rectangle.y = position.y;
+        return organisms.stream()
+                .filter(org -> rectangle.overlaps(org.getUpdatedRectangle()))
+                .findAny().orElse(null);
+    }
+
+    public static int getCloseOrganismPosition(Vector2 position, List<Organism> organisms) {
+        return IntStream.range(1, 10)
+                .filter(i -> isNotValidPosition(getDirection(position, i, 1), organisms))
+                .findAny().orElse(0);
+    }
+
+    public static int getOppositeDirection(Vector2 position, int oppositeFrom) {
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        List<Organism> herbivores = organismHolder.getHerbivores();
+        List<Organism> predators = organismHolder.getPredators();
+        return Arrays.stream(getOppositeDirection(oppositeFrom))
+                .filter(oppositeDirection -> {
+                    Vector2 direction = getDirection(position, oppositeDirection, 1);
+                    return isValidPosition(direction, herbivores)
+                            && isValidPosition(direction, predators)
+                            && isValidDirection(direction);
+                })
+                .findFirst().orElse(0);
+    }
+
+    public static int[] getOppositeDirection(int direction) {
+        if (direction == 1) {
+            return new int[]{9, 6, 8, 3, 7};
+        } else if (direction == 2) {
+            return new int[]{7, 9, 8};
+        } else if (direction == 3) {
+            return new int[]{7, 4, 8, 1, 9};
+        } else if (direction == 4) {
+            return new int[]{3, 9, 6};
+        } else if (direction == 6) {
+            return new int[]{1, 7, 4};
+        } else if (direction == 7) {
+            return new int[]{3, 2, 6, 1, 9};
+        } else if (direction == 8) {
+            return new int[]{1, 3, 2};
+        } else if (direction == 9) {
+            return new int[]{1, 2, 4, 3, 7};
+        }
+        return new int[]{};
     }
 
     public static boolean isNotFreeSpace(Vector2 position) {

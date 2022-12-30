@@ -30,8 +30,8 @@ public class Starter extends ApplicationAdapter {
         herbivores = organismHolder.getHerbivores();
         predators = organismHolder.getPredators();
         IntStream.range(0, 10).forEach(i -> plants.add(new Plant()));
-        IntStream.range(0, 10).forEach(i -> herbivores.add(new Herbivore()));
-        IntStream.range(0, 10).forEach(i -> predators.add(new Predator()));
+        IntStream.range(0, 30).forEach(i -> herbivores.add(new Herbivore()));
+//        IntStream.range(0, 30).forEach(i -> predators.add(new Predator()));
     }
 
     @Override
@@ -48,12 +48,12 @@ public class Starter extends ApplicationAdapter {
                     .filter(org -> org.getNeighbors().size() < 8)
                     .forEach(Organism::division);
         }
-        if (herbivores.size() < 100) {
-            herbivores.forEach(Organism::division);
-        }
-        if (predators.size() < 100) {
-            predators.forEach(Organism::division);
-        }
+//        if (herbivores.size() < 10) {
+//            herbivores.forEach(Organism::division);
+//        }
+//        if (predators.size() < 10) {
+//            predators.forEach(Organism::division);
+//        }
 
         herbivores.forEach(Organism::move);
         predators.forEach(Organism::move);
