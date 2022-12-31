@@ -50,9 +50,6 @@ public class Plant extends Organism {
         }
         Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
         randomPosition = CommonUtils.getDirection(position, randomDirection);
-//        do {
-//            randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
-//        } while (isNotValidPosition(randomPosition, 1));
         List<Organism> newPlants = OrganismHolder.getOrganismHolder().getNewPlants();
         newPlants.add(new Plant(randomPosition));
         fullness -= PLANT_DIVISION_COST;

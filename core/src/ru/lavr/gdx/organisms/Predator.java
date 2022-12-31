@@ -3,6 +3,7 @@ package ru.lavr.gdx.organisms;
 import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
 import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
 import static ru.lavr.gdx.constants.Constant.MAX_FULLNESS;
+import static ru.lavr.gdx.constants.Constant.PREDATOR_VISION;
 import static ru.lavr.gdx.constants.Constant.READY_FOR_DIVISION;
 import static ru.lavr.gdx.constants.Constant.PREDATOR_DIVISION_COST;
 import static ru.lavr.gdx.constants.Constant.STEP_EXHAUSTION;
@@ -47,14 +48,11 @@ public class Predator extends Organism {
         fullness -= STEP_EXHAUSTION;
         if (!reproduce()) {
             if (!eat()) {
-                randomStep();
+                if (!follow()) {
+                    randomStep();
+                }
             }
         }
-//        int herbivorePosition = getCloseHerbivoreFollow();
-//        if (herbivorePosition != 0) {
-//            momentum = herbivorePosition;
-//            return;
-//        }
         randomStep();
     }
 
@@ -68,16 +66,29 @@ public class Predator extends Organism {
         return CommonUtils.getCloseOrganismPosition(position, herbivores);
     }
 
+    private Organism getCloseHerbivore(int multiplier) {
+        List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
+        return CommonUtils.getCloseOrganism(position, herbivores, multiplier);
+    }
+
+
     private boolean eat() {
-        Integer herbivoreIndex = getCloseHerbivoreIndex();
-        if (herbivoreIndex != null) {
-//            если в remove() передавать Integer будет вызываться метод с remove(Object), а не remove(int)
-            int index = herbivoreIndex;
-            List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
-            herbivores.remove(index);
+        Organism herbivore = getCloseHerbivore(1);
+        if (herbivore != null) {
+            OrganismHolder.getOrganismHolder().getHerbivores().remove(herbivore);
             if (fullness < MAX_FULLNESS) {
                 fullness += STEP_PREDATOR_FULLNESS;
             }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean follow() {
+        Organism herbivore = getCloseHerbivore(PREDATOR_VISION);
+        if (herbivore != null) {
+            Vector2 newPosition = CommonUtils.getPositionFromPosition(position, herbivore.getPosition(), false, 1);
+            position.set(newPosition);
             return true;
         }
         return false;
@@ -90,9 +101,6 @@ public class Predator extends Organism {
             if (CommonUtils.isNotFreeSpace(position)) {
                 return false;
             }
-//            do {
-//                randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
-//            } while (isNotValidPosition(randomPosition, 1));
             Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
             randomPosition = CommonUtils.getDirection(position, randomDirection);
             List<Organism> newPredators = OrganismHolder.getOrganismHolder().getNewPredators();

@@ -7,7 +7,6 @@ import static ru.lavr.gdx.constants.Constant.RIGHT_EDGE;
 import static ru.lavr.gdx.constants.Constant.STEP;
 import static ru.lavr.gdx.constants.Constant.UPPER_EDGE;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -16,7 +15,6 @@ import ru.lavr.gdx.organisms.OrganismHolder;
 import ru.lavr.gdx.organisms.Plant;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -25,7 +23,7 @@ import java.util.stream.IntStream;
 public class CommonUtils {
     private final static Rectangle rectangle = new Rectangle(0, 0, CELL_SIZE, CELL_SIZE);
     private final static Rectangle field = new Rectangle(LEFT_EDGE, BOTTOM_EDGE, RIGHT_EDGE, UPPER_EDGE);
-    private final static Rectangle neighborsRectangle = new Rectangle(0, 0, CELL_SIZE * 3, CELL_SIZE * 3);
+    private final static Rectangle changedRectangle = new Rectangle(0, 0, 0, 0);
 
     public static Vector2 getRandomPosition() {
         Vector2 vector2 = new Vector2();
@@ -118,11 +116,23 @@ public class CommonUtils {
                 .anyMatch(newPosition -> isNotValidPosition(newPosition, organisms));
     }
 
-    public static Organism getOrganism(Vector2 position, List<Organism> organisms) {
+    private static Organism getOrganism(Vector2 position, List<Organism> organisms) {
         rectangle.x = position.x;
         rectangle.y = position.y;
         return organisms.stream()
                 .filter(org -> rectangle.overlaps(org.getUpdatedRectangle()))
+                .findAny().orElse(null);
+    }
+
+    public static Organism getCloseOrganism(Vector2 position, List<Organism> organisms, int multiplier) {
+        Vector2 vector2 = new Vector2(position);
+        vector2.add(-STEP * multiplier, -STEP * multiplier);
+        changedRectangle.x = vector2.x;
+        changedRectangle.y = vector2.y;
+        changedRectangle.width = STEP * multiplier;
+        changedRectangle.height = STEP * multiplier;
+        return organisms.stream()
+                .filter(organism -> changedRectangle.overlaps(organism.getUpdatedRectangle()))
                 .findAny().orElse(null);
     }
 
@@ -156,13 +166,14 @@ public class CommonUtils {
                 .findAny().orElse(0);
     }
 
-    public static Vector2 getOppositePosition(Vector2 position, Vector2 oppositeFrom) {
+    public static Vector2 getPositionFromPosition(
+            Vector2 position, Vector2 anotherPosition, boolean opposite, int multiplier) {
         OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
         List<Organism> herbivores = organismHolder.getHerbivores();
         List<Organism> predators = organismHolder.getPredators();
         List<Organism> newHerbivores = organismHolder.getNewHerbivores();
         List<Organism> newPredators = organismHolder.getNewPredators();
-        return getOppositeDirection(position, oppositeFrom).stream()
+        return getOppositeDirections(position, anotherPosition, opposite, multiplier).stream()
                 .filter(oppositeDirection -> isValidPosition(oppositeDirection, herbivores)
                         && isValidPosition(oppositeDirection, predators)
                         && isValidPosition(oppositeDirection, newHerbivores)
@@ -171,9 +182,27 @@ public class CommonUtils {
                 .findFirst().orElse(null);
     }
 
-    public static List<Vector2> getOppositeDirection(Vector2 position, Vector2 oppositeFrom) {
-        float deltaX = position.x - oppositeFrom.x;
-        float deltaY = position.y - oppositeFrom.y;
+    public static List<Vector2> getOppositeDirections(
+            Vector2 position, Vector2 anotherPosition, boolean opposite, int multiplier) {
+        float deltaX;
+        float deltaY;
+        if (opposite) {
+            deltaX = position.x - anotherPosition.x;
+            deltaY = position.y - anotherPosition.y;
+        } else {
+            deltaX = anotherPosition.x - position.x;
+            deltaY = anotherPosition.y - position.y;
+        }
+        if (deltaX > 0) {
+            deltaX = STEP * multiplier;
+        } else if (deltaX < 0) {
+            deltaX = -STEP * multiplier;
+        }
+        if (deltaY > 0) {
+            deltaY = STEP * multiplier;
+        } else if (deltaY < 0) {
+            deltaY = -STEP * multiplier;
+        }
         return Arrays.asList(new Vector2(position).add(deltaX, deltaY),
                 new Vector2(position).add(deltaX, 0),
                 new Vector2(position).add(0, deltaY));
@@ -232,14 +261,16 @@ public class CommonUtils {
         List<Organism> plants = organismHolder.getPlants();
         Vector2 vector2 = new Vector2(position);
         vector2.add(-STEP, -STEP);
-        neighborsRectangle.x = vector2.x;
-        neighborsRectangle.y = vector2.y;
+        changedRectangle.width = CELL_SIZE * 3;
+        changedRectangle.height = CELL_SIZE * 3;
+        changedRectangle.x = vector2.x;
+        changedRectangle.y = vector2.y;
         List<Organism> neighbors = plants.stream()
-                .filter(organism -> neighborsRectangle.overlaps(organism.getUpdatedRectangle()))
+                .filter(organism -> changedRectangle.overlaps(organism.getUpdatedRectangle()))
                 .collect(Collectors.toList());
         if (!newPlants.isEmpty()) {
             neighbors.addAll(newPlants.stream()
-                    .filter(organism -> neighborsRectangle.overlaps(organism.getUpdatedRectangle()))
+                    .filter(organism -> changedRectangle.overlaps(organism.getUpdatedRectangle()))
                     .collect(Collectors.toList()));
         }
         IntStream.range(1, 10)

@@ -8,6 +8,7 @@ import static ru.lavr.gdx.constants.Constant.READY_FOR_DIVISION;
 import static ru.lavr.gdx.constants.Constant.STEP_EXHAUSTION;
 import static ru.lavr.gdx.constants.Constant.STEP_HERBIVORE_FULLNESS;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -62,7 +63,7 @@ public class Herbivore extends Organism {
 
     private Organism getClosePredator() {
         List<Organism> predators = OrganismHolder.getOrganismHolder().getPredators();
-        return CommonUtils.getCloseOrganism(position, predators);
+        return CommonUtils.getCloseOrganism(position, predators, 1);
     }
 
     private Integer getClosePlantIndex() {
@@ -78,6 +79,7 @@ public class Herbivore extends Organism {
             List<Organism> plants = OrganismHolder.getOrganismHolder().getPlants();
             Organism plant = plants.get(index);
             plant.die();
+            Gdx.app.log("MyTag index", String.valueOf(index));
             plants.remove(index);
             if (fullness < MAX_FULLNESS) {
                 fullness += STEP_HERBIVORE_FULLNESS;
@@ -105,9 +107,6 @@ public class Herbivore extends Organism {
             if (CommonUtils.isNotFreeSpace(position)) {
                 return false;
             }
-//            do {
-//                randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
-//            } while (isNotValidPosition(randomPosition, 1));
             Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
             randomPosition = CommonUtils.getDirection(position, randomDirection);
             List<Organism> newHerbivores = OrganismHolder.getOrganismHolder().getNewHerbivores();
