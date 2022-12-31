@@ -88,11 +88,11 @@ public class Herbivore extends Organism {
     }
 
     private boolean runAway() {
-        Organism predator = getClosePredator();
-        if (predator != null) {
-            Vector2 oppositePosition = CommonUtils.getOppositePosition(position, predator.getPosition());
-            position.set(oppositePosition);
-//            momentum = oppositeDirection;
+        int predatorPosition = getClosePredatorDirection();
+        if (predatorPosition != 0) {
+            int oppositeDirection = CommonUtils.getOppositeDirection(position, predatorPosition);
+            position.set(CommonUtils.getDirection(position, oppositeDirection, 1));
+            momentum = oppositeDirection;
             return true;
         }
         return false;
