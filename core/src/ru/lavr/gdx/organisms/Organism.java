@@ -13,6 +13,8 @@ import ru.lavr.gdx.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public abstract class Organism {
     protected final List<Organism> neighbors = new ArrayList<>();
@@ -62,6 +64,8 @@ public abstract class Organism {
                 || CommonUtils.isNotValidDirection(position);
     }
 
+    public abstract List<Integer> getAvailableDirections(Vector2 position);
+
     public abstract void die();
 
     public void render(Batch batch) {
@@ -74,16 +78,27 @@ public abstract class Organism {
 
     protected void randomStep() {
         Vector2 randomPosition;
-        do {
-            if (isMomentumChanged()) {
-                int randomDirection;
-                randomDirection = CommonUtils.getRandomDirection();
-                randomPosition = CommonUtils.getDirection(position, randomDirection);
-                momentum = randomDirection;
-            } else {
-                randomPosition = CommonUtils.getDirection(position, momentum);
-            }
-        } while (isNotValidPosition(randomPosition, 1));
+//        do {
+//            if (isMomentumChanged()) {
+//                int randomDirection;
+//                randomDirection = CommonUtils.getRandomDirection();
+//                randomPosition = CommonUtils.getDirection(position, randomDirection);
+//                momentum = randomDirection;
+//            } else {
+//                randomPosition = CommonUtils.getDirection(position, momentum);
+//            }
+//        } while (isNotValidPosition(randomPosition, 1));
+        Vector2 nextDirection = CommonUtils.getDirection(position, momentum);
+        if (isMomentumChanged() || CommonUtils.isNotValidDirection(nextDirection)) {
+            int randomDirection;
+            randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
+            randomPosition = CommonUtils.getDirection(position, randomDirection);
+            momentum = randomDirection;
+        } else {
+            randomPosition = nextDirection;
+        }
+
+
         position.set(randomPosition);
     }
 
@@ -115,6 +130,10 @@ public abstract class Organism {
 
     public int getFullness() {
         return fullness;
+    }
+
+    public Vector2 getPosition() {
+        return position;
     }
 
     @Override

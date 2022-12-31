@@ -14,6 +14,8 @@ import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.utils.CommonUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Plant extends Organism {
     private static final Pixmap pixmap;
@@ -46,9 +48,11 @@ public class Plant extends Organism {
         if (neighbors.size() >= 8) {
             return false;
         }
-        do {
-            randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
-        } while (isNotValidPosition(randomPosition, 1));
+        Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
+        randomPosition = CommonUtils.getDirection(position, randomDirection);
+//        do {
+//            randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
+//        } while (isNotValidPosition(randomPosition, 1));
         List<Organism> newPlants = OrganismHolder.getOrganismHolder().getNewPlants();
         newPlants.add(new Plant(randomPosition));
         fullness -= PLANT_DIVISION_COST;
@@ -78,6 +82,23 @@ public class Plant extends Organism {
         return CommonUtils.isNotValidPosition(position, plants)
                 || CommonUtils.isNotValidPosition(position, newPlants)
                 || CommonUtils.isNotValidDirection(position);
+    }
+
+    @Override
+    public List<Integer> getAvailableDirections(Vector2 position) {
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        List<Organism> newPlants = organismHolder.getNewPlants();
+        List<Organism> plants = organismHolder.getPlants();
+        return IntStream.range(1, 10)
+                .filter(i -> i != 5)
+                .filter(i -> {
+                    Vector2 direction = CommonUtils.getDirection(position, i);
+                    return CommonUtils.isValidPosition(direction, plants)
+                            && CommonUtils.isValidPosition(direction, newPlants)
+                            && CommonUtils.isValidDirection(direction);
+                })
+                .boxed()
+                .collect(Collectors.toList());
     }
 
     private void updateNeighbors(Vector2 position) {

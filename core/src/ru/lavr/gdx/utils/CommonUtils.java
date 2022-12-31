@@ -7,6 +7,7 @@ import static ru.lavr.gdx.constants.Constant.RIGHT_EDGE;
 import static ru.lavr.gdx.constants.Constant.STEP;
 import static ru.lavr.gdx.constants.Constant.UPPER_EDGE;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -15,6 +16,7 @@ import ru.lavr.gdx.organisms.OrganismHolder;
 import ru.lavr.gdx.organisms.Plant;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -34,6 +36,14 @@ public class CommonUtils {
 
     public static int getRandomDirection() {
         return MathUtils.random(1, 9);
+    }
+
+    public static Integer getRandomDirection(List<Integer> directions) {
+//        Gdx.app.log("MyTag", String.valueOf(directions));
+        if (!directions.isEmpty()) {
+            return directions.get(MathUtils.random(1, directions.size()) - 1);
+        }
+        return 0;
     }
 
     public static Vector2 getDirection(Vector2 position, int direction) {
@@ -146,15 +156,42 @@ public class CommonUtils {
                 .findAny().orElse(0);
     }
 
+    public static Vector2 getOppositePosition(Vector2 position, Vector2 oppositeFrom) {
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        List<Organism> herbivores = organismHolder.getHerbivores();
+        List<Organism> predators = organismHolder.getPredators();
+        List<Organism> newHerbivores = organismHolder.getNewHerbivores();
+        List<Organism> newPredators = organismHolder.getNewPredators();
+        return getOppositeDirection(position, oppositeFrom).stream()
+                .filter(oppositeDirection -> isValidPosition(oppositeDirection, herbivores)
+                        && isValidPosition(oppositeDirection, predators)
+                        && isValidPosition(oppositeDirection, newHerbivores)
+                        && isValidPosition(oppositeDirection, newPredators)
+                        && isValidDirection(oppositeDirection))
+                .findFirst().orElse(null);
+    }
+
+    public static List<Vector2> getOppositeDirection(Vector2 position, Vector2 oppositeFrom) {
+        float deltaX = position.x - oppositeFrom.x;
+        float deltaY = position.y - oppositeFrom.y;
+        return Arrays.asList(new Vector2(position).add(deltaX, deltaY),
+                new Vector2(position).add(deltaX, 0),
+                new Vector2(position).add(0, deltaY));
+    }
+
     public static int getOppositeDirection(Vector2 position, int oppositeFrom) {
         OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
         List<Organism> herbivores = organismHolder.getHerbivores();
         List<Organism> predators = organismHolder.getPredators();
+        List<Organism> newHerbivores = organismHolder.getNewHerbivores();
+        List<Organism> newPredators = organismHolder.getNewPredators();
         return Arrays.stream(getOppositeDirection(oppositeFrom))
                 .filter(oppositeDirection -> {
                     Vector2 direction = getDirection(position, oppositeDirection, 1);
                     return isValidPosition(direction, herbivores)
                             && isValidPosition(direction, predators)
+                            && isValidPosition(direction, newHerbivores)
+                            && isValidPosition(direction, newPredators)
                             && isValidDirection(direction);
                 })
                 .findFirst().orElse(0);

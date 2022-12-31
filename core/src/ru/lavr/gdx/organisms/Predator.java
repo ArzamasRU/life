@@ -15,6 +15,8 @@ import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.utils.CommonUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Predator extends Organism {
     private static final Pixmap pixmap;
@@ -88,15 +90,34 @@ public class Predator extends Organism {
             if (CommonUtils.isNotFreeSpace(position)) {
                 return false;
             }
-            do {
-                randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
-            } while (isNotValidPosition(randomPosition, 1));
+//            do {
+//                randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
+//            } while (isNotValidPosition(randomPosition, 1));
+            Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
+            randomPosition = CommonUtils.getDirection(position, randomDirection);
             List<Organism> newPredators = OrganismHolder.getOrganismHolder().getNewPredators();
             newPredators.add(new Predator(randomPosition));
             fullness -= PREDATOR_DIVISION_COST;
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<Integer> getAvailableDirections(Vector2 position) {
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        List<Organism> newPredators = organismHolder.getNewPredators();
+        List<Organism> predators = organismHolder.getPredators();
+        return IntStream.range(1, 10)
+                .filter(i -> i != 5)
+                .filter(i -> {
+                    Vector2 direction = CommonUtils.getDirection(position, i);
+                    return CommonUtils.isValidPosition(direction, predators)
+                            && CommonUtils.isValidPosition(direction, newPredators)
+                            && CommonUtils.isValidDirection(direction);
+                })
+                .boxed()
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -43,7 +43,7 @@ public class Starter extends ApplicationAdapter {
         herbivores.forEach(organism -> organism.render(batch));
         predators.forEach(organism -> organism.render(batch));
 
-//        if (plants.size() < 3000) {
+//        if (plants.size() < 9000) {
 //            plants.stream()
 //                    .filter(org -> org.getNeighbors().size() < 8)
 //                    .forEach(Organism::reproduce);

@@ -8,7 +8,6 @@ import static ru.lavr.gdx.constants.Constant.READY_FOR_DIVISION;
 import static ru.lavr.gdx.constants.Constant.STEP_EXHAUSTION;
 import static ru.lavr.gdx.constants.Constant.STEP_HERBIVORE_FULLNESS;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -16,6 +15,8 @@ import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.utils.CommonUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Herbivore extends Organism {
     private static final Pixmap pixmap;
@@ -54,9 +55,14 @@ public class Herbivore extends Organism {
         }
     }
 
-    private int getClosePredator() {
+    private int getClosePredatorDirection() {
         List<Organism> predators = OrganismHolder.getOrganismHolder().getPredators();
         return CommonUtils.getCloseOrganismPosition(position, predators);
+    }
+
+    private Organism getClosePredator() {
+        List<Organism> predators = OrganismHolder.getOrganismHolder().getPredators();
+        return CommonUtils.getCloseOrganism(position, predators);
     }
 
     private Integer getClosePlantIndex() {
@@ -82,11 +88,11 @@ public class Herbivore extends Organism {
     }
 
     private boolean runAway() {
-        int predatorPosition = getClosePredator();
-        if (predatorPosition != 0) {
-            int oppositeDirection = CommonUtils.getOppositeDirection(position, predatorPosition);
-            position.set(CommonUtils.getDirection(position, oppositeDirection, 1));
-            momentum = oppositeDirection;
+        Organism predator = getClosePredator();
+        if (predator != null) {
+            Vector2 oppositePosition = CommonUtils.getOppositePosition(position, predator.getPosition());
+            position.set(oppositePosition);
+//            momentum = oppositeDirection;
             return true;
         }
         return false;
@@ -99,15 +105,34 @@ public class Herbivore extends Organism {
             if (CommonUtils.isNotFreeSpace(position)) {
                 return false;
             }
-            do {
-                randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
-            } while (isNotValidPosition(randomPosition, 1));
+//            do {
+//                randomPosition = CommonUtils.getDirection(position, CommonUtils.getRandomDirection());
+//            } while (isNotValidPosition(randomPosition, 1));
+            Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
+            randomPosition = CommonUtils.getDirection(position, randomDirection);
             List<Organism> newHerbivores = OrganismHolder.getOrganismHolder().getNewHerbivores();
             newHerbivores.add(new Herbivore(randomPosition));
             fullness -= HERBIVORE_DIVISION_COST;
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<Integer> getAvailableDirections(Vector2 position) {
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        List<Organism> newHerbivores = organismHolder.getNewHerbivores();
+        List<Organism> herbivores = organismHolder.getHerbivores();
+        return IntStream.range(1, 10)
+                .filter(i -> i != 5)
+                .filter(i -> {
+                    Vector2 direction = CommonUtils.getDirection(position, i);
+                    return CommonUtils.isValidPosition(direction, herbivores)
+                            && CommonUtils.isValidPosition(direction, newHerbivores)
+                            && CommonUtils.isValidDirection(direction);
+                })
+                .boxed()
+                .collect(Collectors.toList());
     }
 
     @Override
