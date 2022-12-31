@@ -9,10 +9,9 @@ public class Constant {
     public static final int MAX_MOMENTUM = 10;
 
     //    общие свойства
-    public static final int MAX_FULLNESS = 200;
+    public static final int MAX_FULLNESS = 150;
     public static final int READY_FOR_DIVISION = 100;
-    public static final int STEP_EXHAUSTION = 5;
-//    public static final int STEP_EXHAUSTION = 1;
+    public static final int STEP_EXHAUSTION = 1;
 
     //    свойства plant
     public static final int PLANT_DIVISION_COST = 100;
@@ -20,11 +19,10 @@ public class Constant {
 
     //    свойства herbivore
     public static final int HERBIVORE_DIVISION_COST = 50;
-    public static final int STEP_HERBIVORE_FULLNESS = 100;
-//    public static final int STEP_HERBIVORE_FULLNESS = 5;
+    public static final int STEP_HERBIVORE_FULLNESS = 5;
 
     //    свойства predator
-    public static final int PREDATOR_DIVISION_COST = 30;
+    public static final int PREDATOR_DIVISION_COST = 50;
     public static final int STEP_PREDATOR_FULLNESS = 100;
     public static final int PREDATOR_VISION = 2;
 
@@ -44,5 +42,11 @@ public class Constant {
 //    public static final int UPPER_EDGE = 800;
 //    public static final int RIGHT_EDGE = 1800;
 //    public static final int BOTTOM_EDGE = 100;
+//    public static final int LEFT_EDGE = 0;
+
+    //     для тестов
+//    public static final int UPPER_EDGE = 50;
+//    public static final int RIGHT_EDGE = 50;
+//    public static final int BOTTOM_EDGE = 0;
 //    public static final int LEFT_EDGE = 0;
 }

@@ -31,7 +31,7 @@ public class Starter extends ApplicationAdapter {
         predators = organismHolder.getPredators();
         IntStream.range(0, 100).forEach(i -> plants.add(new Plant()));
         IntStream.range(0, 100).forEach(i -> herbivores.add(new Herbivore()));
-//        IntStream.range(0, 100).forEach(i -> predators.add(new Predator()));
+        IntStream.range(0, 100).forEach(i -> predators.add(new Predator()));
     }
 
     @Override
@@ -62,12 +62,8 @@ public class Starter extends ApplicationAdapter {
         CommonUtils.updateOrganisms();
 
         Gdx.app.log("MyTag", String.valueOf(plants.size()));
-//        if (plants.size() < 5) {
-//            Gdx.app.log("MyTag", plants.toString());
-////            plants.forEach(org -> Gdx.app.log("MyTag", org.getPosition().toString()));
-//        }
-//        Gdx.app.log("MyTag", String.valueOf(herbivores.size()));
-//        Gdx.app.log("MyTag", String.valueOf(predators.size()));
+        Gdx.app.log("MyTag", String.valueOf(herbivores.size()));
+        Gdx.app.log("MyTag", String.valueOf(predators.size()));
         batch.end();
     }
 

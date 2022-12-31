@@ -46,7 +46,6 @@ public class Herbivore extends Organism {
             return;
         }
         fullness -= STEP_EXHAUSTION;
-//        Gdx.app.log("MyTag", String.valueOf(fullness));
         if (!runAway()) {
             if (!reproduce()) {
                 if (!eat()) {
@@ -79,7 +78,6 @@ public class Herbivore extends Organism {
             List<Organism> plants = OrganismHolder.getOrganismHolder().getPlants();
             Organism plant = plants.get(index);
             plant.die();
-            Gdx.app.log("MyTag index", String.valueOf(index));
             plants.remove(index);
             if (fullness < MAX_FULLNESS) {
                 fullness += STEP_HERBIVORE_FULLNESS;
@@ -102,17 +100,20 @@ public class Herbivore extends Organism {
 
     @Override
     public boolean reproduce() {
-        if (fullness >= READY_FOR_DIVISION) {
-            Vector2 randomPosition;
-            if (CommonUtils.isNotFreeSpace(position)) {
-                return false;
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        if (organismHolder.getPlants().size() > 3) {
+            if (fullness >= READY_FOR_DIVISION) {
+                Vector2 randomPosition;
+                if (CommonUtils.isNotFreeSpace(position)) {
+                    return false;
+                }
+                Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
+                randomPosition = CommonUtils.getDirection(position, randomDirection);
+                List<Organism> newHerbivores = OrganismHolder.getOrganismHolder().getNewHerbivores();
+                newHerbivores.add(new Herbivore(randomPosition));
+                fullness -= HERBIVORE_DIVISION_COST;
+                return true;
             }
-            Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
-            randomPosition = CommonUtils.getDirection(position, randomDirection);
-            List<Organism> newHerbivores = OrganismHolder.getOrganismHolder().getNewHerbivores();
-            newHerbivores.add(new Herbivore(randomPosition));
-            fullness -= HERBIVORE_DIVISION_COST;
-            return true;
         }
         return false;
     }

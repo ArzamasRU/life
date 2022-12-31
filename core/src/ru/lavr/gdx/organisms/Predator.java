@@ -9,6 +9,7 @@ import static ru.lavr.gdx.constants.Constant.PREDATOR_DIVISION_COST;
 import static ru.lavr.gdx.constants.Constant.STEP_EXHAUSTION;
 import static ru.lavr.gdx.constants.Constant.STEP_PREDATOR_FULLNESS;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -70,7 +71,6 @@ public class Predator extends Organism {
         List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
         return CommonUtils.getCloseOrganism(position, herbivores, multiplier);
     }
-
 
     private boolean eat() {
         Organism herbivore = getCloseHerbivore(1);

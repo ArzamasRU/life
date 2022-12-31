@@ -37,7 +37,6 @@ public class CommonUtils {
     }
 
     public static Integer getRandomDirection(List<Integer> directions) {
-//        Gdx.app.log("MyTag", String.valueOf(directions));
         if (!directions.isEmpty()) {
             return directions.get(MathUtils.random(1, directions.size()) - 1);
         }
@@ -129,8 +128,9 @@ public class CommonUtils {
         vector2.add(-STEP * multiplier, -STEP * multiplier);
         changedRectangle.x = vector2.x;
         changedRectangle.y = vector2.y;
-        changedRectangle.width = STEP * multiplier;
-        changedRectangle.height = STEP * multiplier;
+//        m = 1 => 3; m = 2 => 4; m = 3 => 5
+        changedRectangle.width = STEP * (3 + multiplier - 1);
+        changedRectangle.height = STEP * (3 + multiplier - 1);
         return organisms.stream()
                 .filter(organism -> changedRectangle.overlaps(organism.getUpdatedRectangle()))
                 .findAny().orElse(null);
@@ -146,7 +146,7 @@ public class CommonUtils {
     public static Integer getOrganismIndex(Vector2 position, List<Organism> organisms) {
         rectangle.x = position.x;
         rectangle.y = position.y;
-        return IntStream.range(0, organisms.size() - 1)
+        return IntStream.range(0, organisms.size())
                 .filter(i -> rectangle.overlaps(organisms.get(i).getUpdatedRectangle()))
                 .boxed()
                 .findAny().orElse(null);
@@ -179,7 +179,7 @@ public class CommonUtils {
                         && isValidPosition(oppositeDirection, newHerbivores)
                         && isValidPosition(oppositeDirection, newPredators)
                         && isValidDirection(oppositeDirection))
-                .findFirst().orElse(null);
+                .findFirst().orElse(position);
     }
 
     public static List<Vector2> getOppositeDirections(
