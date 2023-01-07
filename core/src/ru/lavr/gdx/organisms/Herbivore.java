@@ -4,11 +4,11 @@ import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
 import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
 import static ru.lavr.gdx.constants.Constant.HERBIVORE_DIVISION_COST;
 import static ru.lavr.gdx.constants.Constant.MAX_FULLNESS;
-import static ru.lavr.gdx.constants.Constant.READY_FOR_DIVISION;
+import static ru.lavr.gdx.constants.Constant.HERBIVORE_READY_FOR_DIVISION;
+import static ru.lavr.gdx.constants.Constant.START_HERBIVORE_FULLNESS;
 import static ru.lavr.gdx.constants.Constant.STEP_EXHAUSTION;
 import static ru.lavr.gdx.constants.Constant.STEP_HERBIVORE_FULLNESS;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -32,12 +32,12 @@ public class Herbivore extends Organism {
 
     public Herbivore() {
         super(texture);
-        fullness = 100;
+        fullness = START_HERBIVORE_FULLNESS;
     }
 
     public Herbivore(Vector2 position) {
         super(texture, position);
-        fullness = 100;
+        fullness = START_HERBIVORE_FULLNESS;
     }
 
     @Override
@@ -102,7 +102,7 @@ public class Herbivore extends Organism {
     public boolean reproduce() {
         OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
         if (organismHolder.getPlants().size() > 3) {
-            if (fullness >= READY_FOR_DIVISION) {
+            if (fullness >= HERBIVORE_READY_FOR_DIVISION) {
                 Vector2 randomPosition;
                 if (CommonUtils.isNotFreeSpace(position)) {
                     return false;

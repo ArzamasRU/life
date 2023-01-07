@@ -75,6 +75,7 @@ public class CommonUtils {
         rectangle.x = vector2.x;
         rectangle.y = vector2.y;
         return organisms.stream()
+                .filter(Organism::isNotOutOfBorder)
                 .map(Organism::getUpdatedRectangle)
                 .noneMatch(rectangle::overlaps);
     }

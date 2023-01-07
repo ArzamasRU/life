@@ -4,8 +4,9 @@ import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
 import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
 import static ru.lavr.gdx.constants.Constant.MAX_FULLNESS;
 import static ru.lavr.gdx.constants.Constant.PREDATOR_VISION;
-import static ru.lavr.gdx.constants.Constant.READY_FOR_DIVISION;
+import static ru.lavr.gdx.constants.Constant.PREDATOR_READY_FOR_DIVISION;
 import static ru.lavr.gdx.constants.Constant.PREDATOR_DIVISION_COST;
+import static ru.lavr.gdx.constants.Constant.START_PREDATOR_FULLNESS;
 import static ru.lavr.gdx.constants.Constant.STEP_EXHAUSTION;
 import static ru.lavr.gdx.constants.Constant.STEP_PREDATOR_FULLNESS;
 
@@ -33,12 +34,12 @@ public class Predator extends Organism {
 
     public Predator() {
         super(texture);
-        fullness = 100;
+        fullness = START_PREDATOR_FULLNESS;
     }
 
     public Predator(Vector2 position) {
         super(texture, position);
-        fullness = 100;
+        fullness = START_PREDATOR_FULLNESS;
     }
 
     @Override
@@ -96,7 +97,7 @@ public class Predator extends Organism {
 
     @Override
     public boolean reproduce() {
-        if (fullness >= READY_FOR_DIVISION) {
+        if (fullness >= PREDATOR_READY_FOR_DIVISION) {
             Vector2 randomPosition;
             if (CommonUtils.isNotFreeSpace(position)) {
                 return false;

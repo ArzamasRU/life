@@ -57,8 +57,12 @@ public abstract class Organism {
         List<Organism> newPredators = organismHolder.getNewPredators();
         List<Organism> herbivores = organismHolder.getHerbivores();
         List<Organism> predators = organismHolder.getPredators();
+        List<Organism> plants = organismHolder.getPlants();
+        List<Organism> newPlants = organismHolder.getNewPlants();
         return CommonUtils.isNotValidPosition(position, herbivores)
                 || CommonUtils.isNotValidPosition(position, newHerbivores)
+                || CommonUtils.isNotValidPosition(position, plants)
+                || CommonUtils.isNotValidPosition(position, newPlants)
                 || CommonUtils.isNotValidPosition(position, predators)
                 || CommonUtils.isNotValidPosition(position, newPredators)
                 || CommonUtils.isNotValidDirection(position);

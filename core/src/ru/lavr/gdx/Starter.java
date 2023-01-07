@@ -1,5 +1,7 @@
 package ru.lavr.gdx;
 
+import static ru.lavr.gdx.constants.Constant.PAUSE;
+
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -18,6 +20,8 @@ import java.util.stream.IntStream;
 public class Starter extends ApplicationAdapter {
     SpriteBatch batch;
     OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+    long time;
+    long step;
     private List<Organism> plants;
     private List<Organism> herbivores;
     private List<Organism> predators;
@@ -29,19 +33,25 @@ public class Starter extends ApplicationAdapter {
         plants = organismHolder.getPlants();
         herbivores = organismHolder.getHerbivores();
         predators = organismHolder.getPredators();
-        IntStream.range(0, 100).forEach(i -> plants.add(new Plant()));
+        IntStream.range(0, 1000).forEach(i -> plants.add(new Plant()));
         IntStream.range(0, 100).forEach(i -> herbivores.add(new Herbivore()));
         IntStream.range(0, 100).forEach(i -> predators.add(new Predator()));
     }
 
     @Override
     public void render() {
+        step++;
+        pause();
         ScreenUtils.clear(1, 1, 1, 1);
         batch.begin();
 
         plants.forEach(organism -> organism.render(batch));
         herbivores.forEach(organism -> organism.render(batch));
         predators.forEach(organism -> organism.render(batch));
+
+        if (plants.size() < 1000) {
+            IntStream.range(0, 10).forEach(i -> plants.add(new Plant()));
+        }
 
 //        if (plants.size() < 9000) {
 //            plants.stream()
@@ -61,10 +71,26 @@ public class Starter extends ApplicationAdapter {
 
         CommonUtils.updateOrganisms();
 
-        Gdx.app.log("MyTag", String.valueOf(plants.size()));
-        Gdx.app.log("MyTag", String.valueOf(herbivores.size()));
-        Gdx.app.log("MyTag", String.valueOf(predators.size()));
+        Gdx.app.log("step ", String.valueOf(step));
+        Gdx.app.log("plants ", String.valueOf(plants.size()));
+        Gdx.app.log("herbivores ", String.valueOf(herbivores.size()));
+        Gdx.app.log("predators ", String.valueOf(predators.size()));
         batch.end();
+    }
+
+    public void pause() {
+        long delta = System.currentTimeMillis() - time;
+//        if (delta > PAUSE) {
+//            Gdx.app.log("pause = ",  String.valueOf(delta));
+//        }
+        if (delta < PAUSE) {
+            try {
+                Thread.sleep(PAUSE - delta);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        time = System.currentTimeMillis();
     }
 
     @Override
