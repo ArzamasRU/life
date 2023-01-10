@@ -16,6 +16,7 @@ import ru.lavr.gdx.organisms.Plant;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -312,5 +313,11 @@ public class CommonUtils {
         newPlants.clear();
         newHerbivores.clear();
         newPredators.clear();
+    }
+
+    public static Rectangle getSquare(Rectangle rectangle) {
+        return OrganismHolder.getOrganismHolder().getSquares().stream()
+                .filter(sqr -> sqr.overlaps(rectangle))
+                .findAny().orElseThrow(() -> new RuntimeException("square is not found!"));
     }
 }

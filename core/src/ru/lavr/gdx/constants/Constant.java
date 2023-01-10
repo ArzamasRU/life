@@ -8,6 +8,7 @@ public class Constant {
     //    импульс движения от MOMENTUM до MAX_MOMENTUM (MOMENTUM = MAX_MOMENTUM приведет к бесконечному циклу)
     public static final int MOMENTUM = 9;
     public static final int MAX_MOMENTUM = 10;
+    public static final int SQUARE_SIZE = STEP * 10;
 
     //    общие свойства
     public static final int MAX_FULLNESS = 300;

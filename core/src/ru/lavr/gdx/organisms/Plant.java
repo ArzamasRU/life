@@ -7,13 +7,16 @@ import static ru.lavr.gdx.constants.Constant.PLANT_READY_FOR_DIVISION;
 import static ru.lavr.gdx.constants.Constant.PLANT_DIVISION_COST;
 import static ru.lavr.gdx.constants.Constant.STEP_PLANT_FULLNESS;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.utils.CommonUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -35,11 +38,13 @@ public class Plant extends Organism {
     public Plant() {
         super(texture);
         updateNeighbors(this.position);
+        updatePlantsMap();
     }
 
     public Plant(Vector2 position) {
         super(texture, position);
         updateNeighbors(this.position);
+        updatePlantsMap();
     }
 
     @Override
@@ -68,6 +73,8 @@ public class Plant extends Organism {
 
     @Override
     public void die() {
+        Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
+        plantsMap.get(getUpdatedRectangle()).remove(this);
         getNeighbors().forEach(neighbor -> neighbor.getNeighbors().remove(this));
     }
 
@@ -104,5 +111,10 @@ public class Plant extends Organism {
                 .map(Organism::getNeighbors)
                 .forEach(ns -> ns.add(this));
         this.neighbors.addAll(neighbors);
+    }
+
+    private void updatePlantsMap() {
+        Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
+        plantsMap.get(CommonUtils.getSquare(getUpdatedRectangle())).add(this);
     }
 }
