@@ -3,8 +3,8 @@ package ru.lavr.gdx.organisms;
 import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
 import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
 import static ru.lavr.gdx.constants.Constant.MAX_FULLNESS;
-import static ru.lavr.gdx.constants.Constant.PLANT_READY_FOR_DIVISION;
 import static ru.lavr.gdx.constants.Constant.PLANT_DIVISION_COST;
+import static ru.lavr.gdx.constants.Constant.PLANT_READY_FOR_DIVISION;
 import static ru.lavr.gdx.constants.Constant.STEP_PLANT_FULLNESS;
 
 import com.badlogic.gdx.Gdx;
@@ -37,14 +37,14 @@ public class Plant extends Organism {
 
     public Plant() {
         super(texture);
-        updateNeighbors(this.position);
         updatePlantsMap();
+        updateNeighbors(this.position);
     }
 
     public Plant(Vector2 position) {
         super(texture, position);
-        updateNeighbors(this.position);
         updatePlantsMap();
+        updateNeighbors(this.position);
     }
 
     @Override
@@ -90,15 +90,14 @@ public class Plant extends Organism {
 
     @Override
     public List<Integer> getAvailableDirections(Vector2 position) {
-        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
-        List<Organism> newPlants = organismHolder.getNewPlants();
+        Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
         return IntStream.range(1, 10)
                 .filter(i -> i != 5)
                 .filter(i -> {
                     Vector2 direction = CommonUtils.getDirection(position, i);
-                    return CommonUtils.isValidPosition(direction, getNeighbors())
-                            && CommonUtils.isValidPosition(direction, newPlants)
-                            && CommonUtils.isValidDirection(direction);
+                    return CommonUtils.isValidDirection(direction)
+                            && CommonUtils.isValidPosition(direction, getNeighbors())
+                            && CommonUtils.isValidPosition(direction, plantsMap.get(CommonUtils.getSquare(direction)));
                 })
                 .boxed()
                 .collect(Collectors.toList());

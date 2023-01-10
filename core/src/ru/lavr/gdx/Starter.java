@@ -31,7 +31,7 @@ public class Starter extends ApplicationAdapter {
         plants = organismHolder.getPlants();
         herbivores = organismHolder.getHerbivores();
         predators = organismHolder.getPredators();
-        IntStream.range(0, 5000).forEach(i -> plants.add(new Plant()));
+        IntStream.range(0, 1000).forEach(i -> plants.add(new Plant()));
 //        IntStream.range(0, 100).forEach(i -> herbivores.add(new Herbivore()));
 //        IntStream.range(0, 100).forEach(i -> predators.add(new Predator()));
     }
@@ -63,14 +63,14 @@ public class Starter extends ApplicationAdapter {
 //            predators.forEach(Organism::division);
 //        }
 
-//        plants.forEach(Organism::move);
+        plants.forEach(Organism::move);
 //        herbivores.forEach(Organism::move);
 //        predators.forEach(Organism::move);
 
         CommonUtils.updateOrganisms();
 
-//        Gdx.app.log("step ", String.valueOf(step));
-//        Gdx.app.log("plants ", String.valueOf(plants.size()));
+        Gdx.app.log("step ", String.valueOf(step));
+        Gdx.app.log("plants ", String.valueOf(plants.size()));
 //        Gdx.app.log("herbivores ", String.valueOf(herbivores.size()));
 //        Gdx.app.log("predators ", String.valueOf(predators.size()));
         batch.end();

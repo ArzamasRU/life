@@ -16,7 +16,8 @@ public class Constant {
 
     //    свойства plant
     public static final int PLANT_DIVISION_COST = 150;
-    public static final int STEP_PLANT_FULLNESS = 1;
+    public static final int STEP_PLANT_FULLNESS = 100;
+//    public static final int STEP_PLANT_FULLNESS = 1;
     public static final int START_PLANT_FULLNESS = 0;
     public static final int PLANT_READY_FOR_DIVISION = 100;
 
