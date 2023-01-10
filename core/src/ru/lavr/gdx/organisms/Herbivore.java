@@ -3,8 +3,8 @@ package ru.lavr.gdx.organisms;
 import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
 import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
 import static ru.lavr.gdx.constants.Constant.HERBIVORE_DIVISION_COST;
-import static ru.lavr.gdx.constants.Constant.MAX_FULLNESS;
 import static ru.lavr.gdx.constants.Constant.HERBIVORE_READY_FOR_DIVISION;
+import static ru.lavr.gdx.constants.Constant.MAX_FULLNESS;
 import static ru.lavr.gdx.constants.Constant.START_HERBIVORE_FULLNESS;
 import static ru.lavr.gdx.constants.Constant.STEP_EXHAUSTION;
 import static ru.lavr.gdx.constants.Constant.STEP_HERBIVORE_FULLNESS;
@@ -12,10 +12,12 @@ import static ru.lavr.gdx.constants.Constant.STEP_HERBIVORE_FULLNESS;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.utils.CommonUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -32,11 +34,13 @@ public class Herbivore extends Organism {
 
     public Herbivore() {
         super(texture);
+        addToOrganismsMap();
         fullness = START_HERBIVORE_FULLNESS;
     }
 
     public Herbivore(Vector2 position) {
         super(texture, position);
+        addToOrganismsMap();
         fullness = START_HERBIVORE_FULLNESS;
     }
 
@@ -56,8 +60,9 @@ public class Herbivore extends Organism {
     }
 
     private int getClosePredatorDirection() {
-        List<Organism> predators = OrganismHolder.getOrganismHolder().getPredators();
-        return CommonUtils.getCloseOrganismPosition(position, predators);
+        Map<Rectangle, List<Organism>> predatorsMap = OrganismHolder.getOrganismHolder().getPredatorsMap();
+        List<Organism> closeOrganisms = CommonUtils.getCloseOrganisms(this.position, predatorsMap, 1);
+        return CommonUtils.getCloseOrganismPosition(position, closeOrganisms);
     }
 
     private Organism getClosePredator() {
@@ -66,19 +71,25 @@ public class Herbivore extends Organism {
     }
 
     private Integer getClosePlantIndex() {
-        List<Organism> plants = OrganismHolder.getOrganismHolder().getPlants();
-        return CommonUtils.getCloseOrganismIndex(position, plants);
+        Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
+        List<Organism> closeOrganisms = CommonUtils.getCloseOrganisms(this.position, plantsMap, 1);
+        return CommonUtils.getCloseOrganismIndex(position, closeOrganisms);
+    }
+
+    private Organism getClosePlant() {
+        Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
+        List<Organism> plants = CommonUtils.getCloseOrganisms(this.position, plantsMap, 1);
+        return CommonUtils.getCloseOrganism(position, plants);
     }
 
     private boolean eat() {
-        Integer plantIndex = getClosePlantIndex();
-        if (plantIndex != null) {
-//            если в remove() передавать Integer будет вызываться метод с remove(Object), а не remove(int)
-            int index = plantIndex;
+        Organism plant = getClosePlant();
+        if (plant != null) {
             List<Organism> plants = OrganismHolder.getOrganismHolder().getPlants();
-            Organism plant = plants.get(index);
+            List<Organism> newPlants = OrganismHolder.getOrganismHolder().getNewPlants();
             plant.die();
-            plants.remove(index);
+            plants.remove(plant);
+            newPlants.remove(plant);
             if (fullness < MAX_FULLNESS) {
                 fullness += STEP_HERBIVORE_FULLNESS;
             }
@@ -100,36 +111,30 @@ public class Herbivore extends Organism {
 
     @Override
     public boolean reproduce() {
-        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
-        if (organismHolder.getPlants().size() > 3) {
-            if (fullness >= HERBIVORE_READY_FOR_DIVISION) {
-                Vector2 randomPosition;
-                if (CommonUtils.isNotFreeSpace(position)) {
-                    return false;
-                }
-                Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
-                randomPosition = CommonUtils.getDirection(position, randomDirection);
-                List<Organism> newHerbivores = OrganismHolder.getOrganismHolder().getNewHerbivores();
-                newHerbivores.add(new Herbivore(randomPosition));
-                fullness -= HERBIVORE_DIVISION_COST;
-                return true;
+        if (fullness >= HERBIVORE_READY_FOR_DIVISION) {
+            Vector2 randomPosition;
+            if (CommonUtils.isNotFreeSpace(position)) {
+                return false;
             }
+            Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
+            randomPosition = CommonUtils.getDirection(position, randomDirection);
+            List<Organism> newHerbivores = OrganismHolder.getOrganismHolder().getNewHerbivores();
+            newHerbivores.add(new Herbivore(randomPosition));
+            fullness -= HERBIVORE_DIVISION_COST;
+            return true;
         }
         return false;
     }
 
     @Override
     public List<Integer> getAvailableDirections(Vector2 position) {
-        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
-        List<Organism> newHerbivores = organismHolder.getNewHerbivores();
-        List<Organism> herbivores = organismHolder.getHerbivores();
+        Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
         return IntStream.range(1, 10)
                 .filter(i -> i != 5)
                 .filter(i -> {
                     Vector2 direction = CommonUtils.getDirection(position, i);
-                    return CommonUtils.isValidPosition(direction, herbivores)
-                            && CommonUtils.isValidPosition(direction, newHerbivores)
-                            && CommonUtils.isValidDirection(direction);
+                    return CommonUtils.isValidDirection(direction)
+                            && CommonUtils.isValidPosition(direction, herbivoresMap.get(CommonUtils.getSquare(direction)));
                 })
                 .boxed()
                 .collect(Collectors.toList());
@@ -137,5 +142,22 @@ public class Herbivore extends Organism {
 
     @Override
     public void die() {
+    }
+
+    @Override
+    public void addToOrganismsMap() {
+        Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
+        herbivoresMap.get(CommonUtils.getSquare(getUpdatedRectangle())).add(this);
+    }
+
+    @Override
+    public void updateOrganismsMap(Vector2 newPosition) {
+        Rectangle currentRect = CommonUtils.getSquare(getUpdatedRectangle());
+        Rectangle newRect = CommonUtils.getSquare(newPosition);
+        if (!currentRect.equals(newRect)) {
+            Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
+            herbivoresMap.get(currentRect).remove(this);
+            herbivoresMap.get(newRect).add(this);
+        }
     }
 }

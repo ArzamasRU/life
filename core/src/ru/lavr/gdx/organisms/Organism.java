@@ -13,6 +13,7 @@ import ru.lavr.gdx.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -72,6 +73,10 @@ public abstract class Organism {
 
     public abstract void die();
 
+    public abstract void addToOrganismsMap();
+
+    public abstract void updateOrganismsMap(Vector2 newPosition);
+
     public void render(Batch batch) {
         batch.draw(texture, position.x, position.y);
     }
@@ -82,16 +87,6 @@ public abstract class Organism {
 
     protected void randomStep() {
         Vector2 randomPosition;
-//        do {
-//            if (isMomentumChanged()) {
-//                int randomDirection;
-//                randomDirection = CommonUtils.getRandomDirection();
-//                randomPosition = CommonUtils.getDirection(position, randomDirection);
-//                momentum = randomDirection;
-//            } else {
-//                randomPosition = CommonUtils.getDirection(position, momentum);
-//            }
-//        } while (isNotValidPosition(randomPosition, 1));
         Vector2 nextDirection = CommonUtils.getDirection(position, momentum);
         if (isMomentumChanged() || CommonUtils.isNotValidDirection(nextDirection)) {
             int randomDirection;
@@ -101,8 +96,7 @@ public abstract class Organism {
         } else {
             randomPosition = nextDirection;
         }
-
-
+        updateOrganismsMap(randomPosition);
         position.set(randomPosition);
     }
 

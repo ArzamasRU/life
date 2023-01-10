@@ -132,4 +132,14 @@ public class Predator extends Organism {
     @Override
     public void die() {
     }
+
+    @Override
+    public void addToOrganismsMap() {
+
+    }
+
+    @Override
+    public void updateOrganismsMap(Vector2 newPosition) {
+
+    }
 }

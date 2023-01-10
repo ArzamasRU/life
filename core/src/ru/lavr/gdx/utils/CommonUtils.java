@@ -141,8 +141,10 @@ public class CommonUtils {
 
     public static Organism getCloseOrganism(Vector2 position, List<Organism> organisms) {
         return IntStream.range(1, 10)
+                .filter(i -> i != 5)
                 .mapToObj(i -> getDirection(position, i, 1))
                 .map(newPosition -> getOrganism(newPosition, organisms))
+                .filter(Objects::nonNull)
                 .findAny().orElse(null);
     }
 
@@ -213,18 +215,14 @@ public class CommonUtils {
 
     public static int getOppositeDirection(Vector2 position, int oppositeFrom) {
         OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
-        List<Organism> herbivores = organismHolder.getHerbivores();
-        List<Organism> predators = organismHolder.getPredators();
-        List<Organism> newHerbivores = organismHolder.getNewHerbivores();
-        List<Organism> newPredators = organismHolder.getNewPredators();
+        Map<Rectangle, List<Organism>> herbivoresMap = organismHolder.getHerbivoresMap();
+        Map<Rectangle, List<Organism>> predatorsMap = organismHolder.getPredatorsMap();
         return Arrays.stream(getOppositeDirection(oppositeFrom))
                 .filter(oppositeDirection -> {
                     Vector2 direction = getDirection(position, oppositeDirection, 1);
-                    return isValidPosition(direction, herbivores)
-                            && isValidPosition(direction, predators)
-                            && isValidPosition(direction, newHerbivores)
-                            && isValidPosition(direction, newPredators)
-                            && isValidDirection(direction);
+                    return isValidDirection(direction)
+                            && isValidPosition(direction, herbivoresMap.get(CommonUtils.getSquare(direction)))
+                            && isValidPosition(direction, predatorsMap.get(CommonUtils.getSquare(direction)));
                 })
                 .findFirst().orElse(0);
     }
@@ -281,6 +279,24 @@ public class CommonUtils {
         return neighbors;
     }
 
+    public static List<Organism> getCloseOrganisms(
+            Vector2 position, Map<Rectangle, List<Organism>> organismsMap, int multiplier) {
+        Vector2 vector2 = new Vector2(position);
+        vector2.add(-STEP * multiplier, -STEP * multiplier);
+        changedRectangle.width = CELL_SIZE * (3 + multiplier - 1);
+        changedRectangle.height = CELL_SIZE * (3 + multiplier - 1);
+        changedRectangle.x = vector2.x;
+        changedRectangle.y = vector2.y;
+        rectangle.x = position.x;
+        rectangle.y = position.y;
+        return getSquares(changedRectangle).stream()
+                .map(organismsMap::get)
+                .flatMap(List::stream)
+                .filter(organism -> changedRectangle.overlaps(organism.getUpdatedRectangle()))
+                .filter(organism -> !rectangle.overlaps(organism.getUpdatedRectangle()))
+                .collect(Collectors.toList());
+    }
+
     public static void setInactiveOrganisms(List<Organism> organisms) {
         organisms.stream()
                 .filter(org -> org.getNeighbors().size() >= 8)
@@ -306,9 +322,9 @@ public class CommonUtils {
                 .filter(org -> org.getFullness() <= 0)
                 .collect(Collectors.toList()));
 
-        plants.addAll(newPlants);
-        herbivores.addAll(newHerbivores);
-        predators.addAll(newPredators);
+        plants.addAll(newPlants.stream().filter(Objects::nonNull).collect(Collectors.toList()));
+        herbivores.addAll(newHerbivores.stream().filter(Objects::nonNull).collect(Collectors.toList()));
+        predators.addAll(newPredators.stream().filter(Objects::nonNull).collect(Collectors.toList()));
         newPlants.clear();
         newHerbivores.clear();
         newPredators.clear();

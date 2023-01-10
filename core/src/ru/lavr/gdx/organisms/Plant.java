@@ -7,7 +7,6 @@ import static ru.lavr.gdx.constants.Constant.PLANT_DIVISION_COST;
 import static ru.lavr.gdx.constants.Constant.PLANT_READY_FOR_DIVISION;
 import static ru.lavr.gdx.constants.Constant.STEP_PLANT_FULLNESS;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -37,13 +36,13 @@ public class Plant extends Organism {
 
     public Plant() {
         super(texture);
-        updatePlantsMap();
+        addToOrganismsMap();
         updateNeighbors(this.position);
     }
 
     public Plant(Vector2 position) {
         super(texture, position);
-        updatePlantsMap();
+        addToOrganismsMap();
         updateNeighbors(this.position);
     }
 
@@ -74,7 +73,7 @@ public class Plant extends Organism {
     @Override
     public void die() {
         Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
-        plantsMap.get(getUpdatedRectangle()).remove(this);
+        plantsMap.get(CommonUtils.getSquare(getUpdatedRectangle())).remove(this);
         getNeighbors().forEach(neighbor -> neighbor.getNeighbors().remove(this));
     }
 
@@ -103,6 +102,16 @@ public class Plant extends Organism {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void addToOrganismsMap() {
+        Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
+        plantsMap.get(CommonUtils.getSquare(getUpdatedRectangle())).add(this);
+    }
+
+    @Override
+    public void updateOrganismsMap(Vector2 newPosition) {
+    }
+
     private void updateNeighbors(Vector2 position) {
         List<Organism> neighbors = CommonUtils.getNeighbors(position);
         neighbors.stream()
@@ -110,10 +119,5 @@ public class Plant extends Organism {
                 .map(Organism::getNeighbors)
                 .forEach(ns -> ns.add(this));
         this.neighbors.addAll(neighbors);
-    }
-
-    private void updatePlantsMap() {
-        Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
-        plantsMap.get(CommonUtils.getSquare(getUpdatedRectangle())).add(this);
     }
 }
