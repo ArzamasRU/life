@@ -131,9 +131,9 @@ public class CommonUtils {
         vector2.add(-STEP * multiplier, -STEP * multiplier);
         changedRectangle.x = vector2.x;
         changedRectangle.y = vector2.y;
-//        m = 1 => 3; m = 2 => 4; m = 3 => 5
-        changedRectangle.width = STEP * (3 + multiplier - 1);
-        changedRectangle.height = STEP * (3 + multiplier - 1);
+//        m = 1 => 3; m = 2 => 5; m = 3 => 7
+        changedRectangle.width = CELL_SIZE * 2 * multiplier + CELL_SIZE;
+        changedRectangle.height = CELL_SIZE * 2 * multiplier + CELL_SIZE;
         return organisms.stream()
                 .filter(organism -> changedRectangle.overlaps(organism.getUpdatedRectangle()))
                 .findAny().orElse(null);
@@ -171,19 +171,17 @@ public class CommonUtils {
                 .findAny().orElse(0);
     }
 
-    public static Vector2 getPositionFromPosition(
-            Vector2 position, Vector2 anotherPosition, boolean opposite, int multiplier) {
+    public static Vector2 getPositionFrom(Vector2 position, Vector2 anotherPosition, boolean opposite, int multiplier) {
         OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
-        List<Organism> herbivores = organismHolder.getHerbivores();
-        List<Organism> predators = organismHolder.getPredators();
-        List<Organism> newHerbivores = organismHolder.getNewHerbivores();
-        List<Organism> newPredators = organismHolder.getNewPredators();
+        Map<Rectangle, List<Organism>> herbivoresMap = organismHolder.getHerbivoresMap();
+        Map<Rectangle, List<Organism>> predatorsMap = organismHolder.getPredatorsMap();
         return getOppositeDirections(position, anotherPosition, opposite, multiplier).stream()
-                .filter(oppositeDirection -> isValidPosition(oppositeDirection, herbivores)
-                        && isValidPosition(oppositeDirection, predators)
-                        && isValidPosition(oppositeDirection, newHerbivores)
-                        && isValidPosition(oppositeDirection, newPredators)
-                        && isValidDirection(oppositeDirection))
+                .filter(oppositeDirection -> {
+                    Rectangle square = CommonUtils.getSquare(oppositeDirection);
+                    return isValidDirection(oppositeDirection)
+                            && isValidPosition(oppositeDirection, predatorsMap.get(square))
+                            && isValidPosition(oppositeDirection, herbivoresMap.get(square));
+                })
                 .findFirst().orElse(position);
     }
 
@@ -283,17 +281,24 @@ public class CommonUtils {
             Vector2 position, Map<Rectangle, List<Organism>> organismsMap, int multiplier) {
         Vector2 vector2 = new Vector2(position);
         vector2.add(-STEP * multiplier, -STEP * multiplier);
-        changedRectangle.width = CELL_SIZE * (3 + multiplier - 1);
-        changedRectangle.height = CELL_SIZE * (3 + multiplier - 1);
+        changedRectangle.width = CELL_SIZE * 2 * multiplier + CELL_SIZE;
+        changedRectangle.height = CELL_SIZE * 2 * multiplier + CELL_SIZE;
         changedRectangle.x = vector2.x;
         changedRectangle.y = vector2.y;
-        rectangle.x = position.x;
-        rectangle.y = position.y;
+//        rectangle.x = position.x;
+//        rectangle.y = position.y;
+//        Gdx.app.log("getCloseOrganisms ", String.valueOf(changedRectangle));
         return getSquares(changedRectangle).stream()
                 .map(organismsMap::get)
                 .flatMap(List::stream)
-                .filter(organism -> changedRectangle.overlaps(organism.getUpdatedRectangle()))
-                .filter(organism -> !rectangle.overlaps(organism.getUpdatedRectangle()))
+                .filter(organism -> {
+                    Gdx.app.log("herbivore organism", changedRectangle + " " + organism);
+//                    if (changedRectangle.overlaps(organism.getUpdatedRectangle())) {
+//                        Gdx.app.log("overlaps! ", changedRectangle + " " + organism);
+//                    }
+                    return changedRectangle.overlaps(organism.getUpdatedRectangle());
+                })
+//                .filter(organism -> !rectangle.overlaps(organism.getUpdatedRectangle()))
                 .collect(Collectors.toList());
     }
 

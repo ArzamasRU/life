@@ -10,14 +10,17 @@ import static ru.lavr.gdx.constants.Constant.START_PREDATOR_FULLNESS;
 import static ru.lavr.gdx.constants.Constant.STEP_EXHAUSTION;
 import static ru.lavr.gdx.constants.Constant.STEP_PREDATOR_FULLNESS;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.utils.CommonUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -34,65 +37,31 @@ public class Predator extends Organism {
 
     public Predator() {
         super(texture);
+        addToOrganismsMap();
         fullness = START_PREDATOR_FULLNESS;
     }
 
     public Predator(Vector2 position) {
         super(texture, position);
+        addToOrganismsMap();
         fullness = START_PREDATOR_FULLNESS;
     }
 
     @Override
     public void move() {
+//        Gdx.app.log("p move 1 ", String.valueOf(position));
         if (CommonUtils.isNotFreeSpace(position)) {
             return;
         }
         fullness -= STEP_EXHAUSTION;
         if (!reproduce()) {
-            if (!eat()) {
+//            if (!eat()) {
                 if (!follow()) {
                     randomStep();
                 }
-            }
+//            }
         }
-        randomStep();
-    }
-
-    private Integer getCloseHerbivoreIndex() {
-        List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
-        return CommonUtils.getCloseOrganismIndex(position, herbivores);
-    }
-
-    private int getCloseHerbivoreFollow() {
-        List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
-        return CommonUtils.getCloseOrganismPosition(position, herbivores);
-    }
-
-    private Organism getCloseHerbivore(int multiplier) {
-        List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
-        return CommonUtils.getCloseOrganism(position, herbivores, multiplier);
-    }
-
-    private boolean eat() {
-        Organism herbivore = getCloseHerbivore(1);
-        if (herbivore != null) {
-            OrganismHolder.getOrganismHolder().getHerbivores().remove(herbivore);
-            if (fullness < MAX_FULLNESS) {
-                fullness += STEP_PREDATOR_FULLNESS;
-            }
-            return true;
-        }
-        return false;
-    }
-
-    private boolean follow() {
-        Organism herbivore = getCloseHerbivore(PREDATOR_VISION);
-        if (herbivore != null) {
-            Vector2 newPosition = CommonUtils.getPositionFromPosition(position, herbivore.getPosition(), false, 1);
-            position.set(newPosition);
-            return true;
-        }
-        return false;
+//        Gdx.app.log("p move 2 ", String.valueOf(position));
     }
 
     @Override
@@ -114,16 +83,13 @@ public class Predator extends Organism {
 
     @Override
     public List<Integer> getAvailableDirections(Vector2 position) {
-        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
-        List<Organism> newPredators = organismHolder.getNewPredators();
-        List<Organism> predators = organismHolder.getPredators();
+        Map<Rectangle, List<Organism>> predatorsMap = OrganismHolder.getOrganismHolder().getPredatorsMap();
         return IntStream.range(1, 10)
                 .filter(i -> i != 5)
                 .filter(i -> {
                     Vector2 direction = CommonUtils.getDirection(position, i);
-                    return CommonUtils.isValidPosition(direction, predators)
-                            && CommonUtils.isValidPosition(direction, newPredators)
-                            && CommonUtils.isValidDirection(direction);
+                    return CommonUtils.isValidDirection(direction)
+                            && CommonUtils.isValidPosition(direction, predatorsMap.get(CommonUtils.getSquare(direction)));
                 })
                 .boxed()
                 .collect(Collectors.toList());
@@ -131,15 +97,73 @@ public class Predator extends Organism {
 
     @Override
     public void die() {
+        Map<Rectangle, List<Organism>> predatorsMap = OrganismHolder.getOrganismHolder().getPredatorsMap();
+        predatorsMap.get(CommonUtils.getSquare(getUpdatedRectangle())).remove(this);
     }
 
     @Override
     public void addToOrganismsMap() {
-
+        Map<Rectangle, List<Organism>> predatorsMap = OrganismHolder.getOrganismHolder().getPredatorsMap();
+        predatorsMap.get(CommonUtils.getSquare(getUpdatedRectangle())).add(this);
     }
 
     @Override
     public void updateOrganismsMap(Vector2 newPosition) {
+        Rectangle currentRect = CommonUtils.getSquare(getUpdatedRectangle());
+        Rectangle newRect = CommonUtils.getSquare(newPosition);
+        if (!currentRect.equals(newRect)) {
+            Map<Rectangle, List<Organism>> predatorsMap = OrganismHolder.getOrganismHolder().getPredatorsMap();
+            predatorsMap.get(currentRect).remove(this);
+            predatorsMap.get(newRect).add(this);
+        }
+    }
 
+    private Integer getCloseHerbivoreIndex() {
+        List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
+        return CommonUtils.getCloseOrganismIndex(position, herbivores);
+    }
+
+    private int getCloseHerbivoreFollow() {
+        List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
+        return CommonUtils.getCloseOrganismPosition(position, herbivores);
+    }
+
+    private Organism getCloseHerbivore(int multiplier) {
+        Gdx.app.log("getCloseHerbivore ", String.valueOf(this));
+        Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
+        List<Organism> herbivores = CommonUtils.getCloseOrganisms(this.position, herbivoresMap, multiplier);
+        if (!herbivores.isEmpty()) {
+            Gdx.app.log("close ", this + " " + herbivores);
+        }
+        return CommonUtils.getCloseOrganism(position, herbivores, multiplier);
+    }
+
+    private boolean eat() {
+        Organism herbivore = getCloseHerbivore(1);
+        if (herbivore != null) {
+            List<Organism> herbivores = OrganismHolder.getOrganismHolder().getHerbivores();
+            List<Organism> newHerbivores = OrganismHolder.getOrganismHolder().getNewHerbivores();
+            herbivore.die();
+            herbivores.remove(herbivore);
+            newHerbivores.remove(herbivore);
+            if (fullness < MAX_FULLNESS) {
+                fullness += STEP_PREDATOR_FULLNESS;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean follow() {
+        Organism herbivore = getCloseHerbivore(PREDATOR_VISION);
+        if (herbivore != null) {
+            Gdx.app.log("follow 1 ", position + " " + herbivore);
+            Vector2 newPosition = CommonUtils.getPositionFrom(position, herbivore.getPosition(), false, 1);
+            Gdx.app.log("follow 2 ", position + " " + newPosition);
+            updateOrganismsMap(newPosition);
+            position.set(newPosition);
+            return true;
+        }
+        return false;
     }
 }

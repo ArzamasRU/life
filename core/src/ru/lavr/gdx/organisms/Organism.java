@@ -4,6 +4,7 @@ import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
 import static ru.lavr.gdx.constants.Constant.MAX_MOMENTUM;
 import static ru.lavr.gdx.constants.Constant.MOMENTUM;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.MathUtils;
@@ -13,9 +14,6 @@ import ru.lavr.gdx.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public abstract class Organism {
     protected final List<Organism> neighbors = new ArrayList<>();
@@ -52,6 +50,14 @@ public abstract class Organism {
 
     public abstract boolean reproduce();
 
+    public abstract List<Integer> getAvailableDirections(Vector2 position);
+
+    public abstract void die();
+
+    public abstract void addToOrganismsMap();
+
+    public abstract void updateOrganismsMap(Vector2 newPosition);
+
     public boolean isNotValidPosition(Vector2 position, int multiplier) {
         OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
         List<Organism> newHerbivores = organismHolder.getNewHerbivores();
@@ -69,14 +75,6 @@ public abstract class Organism {
                 || CommonUtils.isNotValidDirection(position);
     }
 
-    public abstract List<Integer> getAvailableDirections(Vector2 position);
-
-    public abstract void die();
-
-    public abstract void addToOrganismsMap();
-
-    public abstract void updateOrganismsMap(Vector2 newPosition);
-
     public void render(Batch batch) {
         batch.draw(texture, position.x, position.y);
     }
@@ -86,6 +84,7 @@ public abstract class Organism {
     }
 
     protected void randomStep() {
+        Gdx.app.log("randomStep ", String.valueOf(position));
         Vector2 randomPosition;
         Vector2 nextDirection = CommonUtils.getDirection(position, momentum);
         if (isMomentumChanged() || CommonUtils.isNotValidDirection(nextDirection)) {
@@ -138,7 +137,6 @@ public abstract class Organism {
     public String toString() {
         return "Organism{" +
                 "position=" + position +
-                ", rectangle=" + rectangle +
                 '}';
     }
 }

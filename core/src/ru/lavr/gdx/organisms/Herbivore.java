@@ -9,6 +9,7 @@ import static ru.lavr.gdx.constants.Constant.START_HERBIVORE_FULLNESS;
 import static ru.lavr.gdx.constants.Constant.STEP_EXHAUSTION;
 import static ru.lavr.gdx.constants.Constant.STEP_HERBIVORE_FULLNESS;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -46,6 +47,7 @@ public class Herbivore extends Organism {
 
     @Override
     public void move() {
+//        Gdx.app.log("h move 1 ", String.valueOf(position));
         if (CommonUtils.isNotFreeSpace(position)) {
             return;
         }
@@ -57,6 +59,7 @@ public class Herbivore extends Organism {
                 }
             }
         }
+//        Gdx.app.log("h move 2 ", String.valueOf(position));
     }
 
     private int getClosePredatorDirection() {
@@ -99,10 +102,10 @@ public class Herbivore extends Organism {
     }
 
     private boolean runAway() {
-        int predatorPosition = getClosePredatorDirection();
-        if (predatorPosition != 0) {
-            int oppositeDirection = CommonUtils.getOppositeDirection(position, predatorPosition);
-            position.set(CommonUtils.getDirection(position, oppositeDirection, 1));
+        Organism predator = getClosePredator();
+        if (predator != null) {
+            Vector2 oppositePosition = CommonUtils.getPositionFrom(position, predator.getPosition(), true, 1);
+            position.set(oppositePosition);
             momentum = oppositeDirection;
             return true;
         }
@@ -142,6 +145,8 @@ public class Herbivore extends Organism {
 
     @Override
     public void die() {
+        Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
+        herbivoresMap.get(CommonUtils.getSquare(getUpdatedRectangle())).remove(this);
     }
 
     @Override
