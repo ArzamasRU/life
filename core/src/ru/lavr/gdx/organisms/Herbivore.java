@@ -9,6 +9,7 @@ import static ru.lavr.gdx.constants.Constant.START_HERBIVORE_FULLNESS;
 import static ru.lavr.gdx.constants.Constant.STEP_EXHAUSTION;
 import static ru.lavr.gdx.constants.Constant.STEP_HERBIVORE_FULLNESS;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -44,10 +45,14 @@ public class Herbivore extends Organism {
 
     @Override
     public void move() {
-        if (CommonUtils.isNotFreeSpace(position)) {
+//        Gdx.app.log("move h ", String.valueOf(this));
+//        Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
+//        herbivoresMap.values().stream().flatMap(List::stream)
+//                .forEach(org -> Gdx.app.log("org ", String.valueOf(org)));
+        fullness -= STEP_EXHAUSTION;
+        if (CommonUtils.isNotFreeSpace(position) || active == false) {
             return;
         }
-        fullness -= STEP_EXHAUSTION;
         if (!runAway()) {
             if (!reproduce()) {
                 if (!eat()) {
@@ -83,11 +88,7 @@ public class Herbivore extends Organism {
     private boolean eat() {
         Organism plant = getClosePlant();
         if (plant != null) {
-            List<Organism> plants = OrganismHolder.getOrganismHolder().getPlants();
-            List<Organism> newPlants = OrganismHolder.getOrganismHolder().getNewPlants();
             plant.die();
-            plants.remove(plant);
-            newPlants.remove(plant);
             if (fullness < MAX_FULLNESS) {
                 fullness += STEP_HERBIVORE_FULLNESS;
             }
@@ -119,8 +120,8 @@ public class Herbivore extends Organism {
             }
             Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
             randomPosition = CommonUtils.getDirection(position, randomDirection);
-            List<Organism> newHerbivores = OrganismHolder.getOrganismHolder().getNewHerbivores();
-            newHerbivores.add(new Herbivore(randomPosition));
+            Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
+            herbivoresMap.get(CommonUtils.getSquare(randomPosition)).add(new Herbivore(randomPosition));
             fullness -= HERBIVORE_DIVISION_COST;
             return true;
         }
@@ -131,6 +132,7 @@ public class Herbivore extends Organism {
     public void die() {
         Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
         herbivoresMap.get(CommonUtils.getSquare(getUpdatedRectangle())).remove(this);
+        active = false;
     }
 
     @Override

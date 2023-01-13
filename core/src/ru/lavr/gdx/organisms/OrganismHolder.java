@@ -1,6 +1,5 @@
 package ru.lavr.gdx.organisms;
 
-import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
 import static ru.lavr.gdx.constants.Constant.RIGHT_EDGE;
 import static ru.lavr.gdx.constants.Constant.SQUARE_SIZE;
 import static ru.lavr.gdx.constants.Constant.UPPER_EDGE;
@@ -18,9 +17,6 @@ public class OrganismHolder {
     private final List<Organism> plants = new ArrayList<>();
     private final List<Organism> herbivores = new ArrayList<>();
     private final List<Organism> predators = new ArrayList<>();
-    private final List<Organism> newPlants = new ArrayList<>();
-    private final List<Organism> newHerbivores = new ArrayList<>();
-    private final List<Organism> newPredators = new ArrayList<>();
     private final Map<Rectangle, List<Organism>> plantsMap = new HashMap<>();
     private final Map<Rectangle, List<Organism>> herbivoresMap = new HashMap<>();
     private final Map<Rectangle, List<Organism>> predatorsMap = new HashMap<>();
@@ -56,18 +52,6 @@ public class OrganismHolder {
 
     public static OrganismHolder getOrganismHolder() {
         return organismHolder;
-    }
-
-    public List<Organism> getNewPlants() {
-        return newPlants;
-    }
-
-    public List<Organism> getNewHerbivores() {
-        return newHerbivores;
-    }
-
-    public List<Organism> getNewPredators() {
-        return newPredators;
     }
 
     public List<Organism> getPlants() {

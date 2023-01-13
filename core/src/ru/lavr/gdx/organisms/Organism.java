@@ -57,18 +57,12 @@ public abstract class Organism {
 
     public boolean isNotValidPosition(Vector2 position, int multiplier) {
         OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
-        List<Organism> newHerbivores = organismHolder.getNewHerbivores();
-        List<Organism> newPredators = organismHolder.getNewPredators();
-        List<Organism> herbivores = organismHolder.getHerbivores();
-        List<Organism> predators = organismHolder.getPredators();
-        List<Organism> plants = organismHolder.getPlants();
-        List<Organism> newPlants = organismHolder.getNewPlants();
-        return CommonUtils.isNotValidPosition(position, herbivores)
-                || CommonUtils.isNotValidPosition(position, newHerbivores)
-                || CommonUtils.isNotValidPosition(position, plants)
-                || CommonUtils.isNotValidPosition(position, newPlants)
-                || CommonUtils.isNotValidPosition(position, predators)
-                || CommonUtils.isNotValidPosition(position, newPredators)
+        Map<Rectangle, List<Organism>> predatorsMap = organismHolder.getPredatorsMap();
+        Map<Rectangle, List<Organism>> herbivoresMap = organismHolder.getHerbivoresMap();
+        Rectangle square = CommonUtils.getSquare(position);
+        return CommonUtils.isNotValidDirection(position)
+                || CommonUtils.isNotValidPosition(position, predatorsMap.get(square))
+                || CommonUtils.isNotValidPosition(position, herbivoresMap.get(square))
                 || CommonUtils.isNotValidDirection(position);
     }
 
@@ -80,9 +74,10 @@ public abstract class Organism {
                 .filter(i -> i != 5)
                 .filter(i -> {
                     Vector2 direction = CommonUtils.getDirection(position, i);
+                    Rectangle square = CommonUtils.getSquare(direction);
                     return CommonUtils.isValidDirection(direction)
-                            && CommonUtils.isValidPosition(direction, predatorsMap.get(CommonUtils.getSquare(direction)))
-                            && CommonUtils.isValidPosition(direction, herbivoresMap.get(CommonUtils.getSquare(direction)));
+                            && CommonUtils.isValidPosition(direction, predatorsMap.get(square))
+                            && CommonUtils.isValidPosition(direction, herbivoresMap.get(square));
                 })
                 .boxed()
                 .collect(Collectors.toList());
@@ -101,10 +96,11 @@ public abstract class Organism {
         Map<Rectangle, List<Organism>> predatorsMap = organismHolder.getPredatorsMap();
         Map<Rectangle, List<Organism>> herbivoresMap = organismHolder.getHerbivoresMap();
         Vector2 newPosition = new Vector2(position).add(momentum);
+        Rectangle square = CommonUtils.getSquare(newPosition);
         if (CommonUtils.isMomentumChanged()
                 || CommonUtils.isNotValidDirection(newPosition)
-                || CommonUtils.isNotValidPosition(newPosition, predatorsMap.get(CommonUtils.getSquare(newPosition)))
-                || CommonUtils.isNotValidPosition(newPosition, herbivoresMap.get(CommonUtils.getSquare(newPosition)))
+                || CommonUtils.isNotValidPosition(newPosition, predatorsMap.get(square))
+                || CommonUtils.isNotValidPosition(newPosition, herbivoresMap.get(square))
         ) {
             int randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
             newPosition = CommonUtils.getDirection(position, randomDirection);

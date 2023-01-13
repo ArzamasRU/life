@@ -9,7 +9,6 @@ import static ru.lavr.gdx.constants.Constant.RIGHT_EDGE;
 import static ru.lavr.gdx.constants.Constant.STEP;
 import static ru.lavr.gdx.constants.Constant.UPPER_EDGE;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -101,17 +100,16 @@ public class CommonUtils {
 
     public static boolean isFreeSpace(Vector2 position, int multiplier) {
         OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
-        List<Organism> newHerbivores = organismHolder.getNewHerbivores();
-        List<Organism> newPredators = organismHolder.getNewPredators();
-        List<Organism> herbivores = organismHolder.getHerbivores();
-        List<Organism> predators = organismHolder.getPredators();
+        Map<Rectangle, List<Organism>> herbivoresMap = organismHolder.getHerbivoresMap();
+        Map<Rectangle, List<Organism>> predatorsMap = organismHolder.getPredatorsMap();
         return IntStream.range(1, 10)
                 .mapToObj(i -> getDirection(position, i, multiplier))
-                .anyMatch(newPosition -> isValidPosition(newPosition, herbivores)
-                        && isValidPosition(newPosition, newHerbivores)
-                        && isValidPosition(newPosition, predators)
-                        && isValidPosition(newPosition, newPredators)
-                        && isValidDirection(newPosition));
+                .anyMatch(newPosition -> {
+                    Rectangle square = CommonUtils.getSquare(newPosition);
+                    return isValidDirection(newPosition)
+                            && isValidPosition(newPosition, herbivoresMap.get(square))
+                            && isValidPosition(newPosition, predatorsMap.get(square));
+                });
     }
 
     public static boolean isOrganismClose(Vector2 position, List<Organism> organisms) {
@@ -274,23 +272,21 @@ public class CommonUtils {
         List<Organism> plants = organismHolder.getPlants();
         List<Organism> herbivores = organismHolder.getHerbivores();
         List<Organism> predators = organismHolder.getPredators();
-        List<Organism> newPlants = organismHolder.getNewPlants();
-        List<Organism> newHerbivores = organismHolder.getNewHerbivores();
-        List<Organism> newPredators = organismHolder.getNewPredators();
+        Map<Rectangle, List<Organism>> plantsMap = organismHolder.getPlantsMap();
+        Map<Rectangle, List<Organism>> herbivoresMap = organismHolder.getHerbivoresMap();
+        Map<Rectangle, List<Organism>> predatorsMap = organismHolder.getPredatorsMap();
 
-        herbivores.removeAll(herbivores.stream()
-                .filter(org -> org.getFullness() <= 0)
-                .collect(Collectors.toList()));
-        predators.removeAll(predators.stream()
-                .filter(org -> org.getFullness() <= 0)
-                .collect(Collectors.toList()));
+        plantsMap.values().forEach(orgs -> orgs.removeIf(org -> org.getFullness() <= 0));
+        herbivoresMap.values().forEach(orgs -> orgs.removeIf(org -> org.getFullness() <= 0));
+        predatorsMap.values().forEach(orgs -> orgs.removeIf(org -> org.getFullness() <= 0));
 
-        plants.addAll(newPlants.stream().filter(Objects::nonNull).collect(Collectors.toList()));
-        herbivores.addAll(newHerbivores.stream().filter(Objects::nonNull).collect(Collectors.toList()));
-        predators.addAll(newPredators.stream().filter(Objects::nonNull).collect(Collectors.toList()));
-        newPlants.clear();
-        newHerbivores.clear();
-        newPredators.clear();
+        plants.clear();
+        herbivores.clear();
+        predators.clear();
+
+        plants.addAll(plantsMap.values().stream().flatMap(List::stream).collect(Collectors.toList()));
+        herbivores.addAll(herbivoresMap.values().stream().flatMap(List::stream).collect(Collectors.toList()));
+        predators.addAll(predatorsMap.values().stream().flatMap(List::stream).collect(Collectors.toList()));
     }
 
     public static Rectangle getSquare(Vector2 position) {

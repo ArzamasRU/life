@@ -54,14 +54,17 @@ public class Plant extends Organism {
         }
         Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
         randomPosition = CommonUtils.getDirection(position, randomDirection);
-        List<Organism> newPlants = OrganismHolder.getOrganismHolder().getNewPlants();
-        newPlants.add(new Plant(randomPosition));
+        Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
+        plantsMap.get(CommonUtils.getSquare(randomPosition)).add(new Plant(randomPosition));
         fullness -= PLANT_DIVISION_COST;
         return true;
     }
 
     @Override
     public void move() {
+        if (active == false) {
+            return;
+        }
         if (fullness < MAX_FULLNESS) {
             fullness += STEP_PLANT_FULLNESS;
         }
@@ -75,16 +78,15 @@ public class Plant extends Organism {
         Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
         plantsMap.get(CommonUtils.getSquare(getUpdatedRectangle())).remove(this);
         getNeighbors().forEach(neighbor -> neighbor.getNeighbors().remove(this));
+        active = false;
     }
 
     @Override
     public boolean isNotValidPosition(Vector2 position, int multiplier) {
-        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
-        List<Organism> newPlants = organismHolder.getNewPlants();
-        List<Organism> plants = organismHolder.getPlants();
-        return CommonUtils.isNotValidPosition(position, plants)
-                || CommonUtils.isNotValidPosition(position, newPlants)
-                || CommonUtils.isNotValidDirection(position);
+        Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
+        List<Organism> plants = plantsMap.get(CommonUtils.getSquare(position));
+        return CommonUtils.isNotValidDirection(position)
+                ||CommonUtils.isNotValidPosition(position, plants);
     }
 
     @Override
