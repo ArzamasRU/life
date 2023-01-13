@@ -2,7 +2,9 @@ package ru.lavr.gdx.utils;
 
 import static ru.lavr.gdx.constants.Constant.BOTTOM_EDGE;
 import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
+import static ru.lavr.gdx.constants.Constant.CHANCE_OF_MOMENTUM_CHANGE;
 import static ru.lavr.gdx.constants.Constant.LEFT_EDGE;
+import static ru.lavr.gdx.constants.Constant.MAX_CHANCE;
 import static ru.lavr.gdx.constants.Constant.RIGHT_EDGE;
 import static ru.lavr.gdx.constants.Constant.STEP;
 import static ru.lavr.gdx.constants.Constant.UPPER_EDGE;
@@ -178,7 +180,8 @@ public class CommonUtils {
         return getOppositeDirections(position, anotherPosition, opposite, multiplier).stream()
                 .filter(oppositeDirection -> {
                     Rectangle square = CommonUtils.getSquare(oppositeDirection);
-                    return isValidDirection(oppositeDirection)
+                    return Objects.nonNull(square)
+                            && isValidDirection(oppositeDirection)
                             && isValidPosition(oppositeDirection, predatorsMap.get(square))
                             && isValidPosition(oppositeDirection, herbivoresMap.get(square));
                 })
@@ -209,41 +212,6 @@ public class CommonUtils {
         return Arrays.asList(new Vector2(position).add(deltaX, deltaY),
                 new Vector2(position).add(deltaX, 0),
                 new Vector2(position).add(0, deltaY));
-    }
-
-    public static int getOppositeDirection(Vector2 position, int oppositeFrom) {
-        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
-        Map<Rectangle, List<Organism>> herbivoresMap = organismHolder.getHerbivoresMap();
-        Map<Rectangle, List<Organism>> predatorsMap = organismHolder.getPredatorsMap();
-        return Arrays.stream(getOppositeDirection(oppositeFrom))
-                .filter(oppositeDirection -> {
-                    Vector2 direction = getDirection(position, oppositeDirection, 1);
-                    return isValidDirection(direction)
-                            && isValidPosition(direction, herbivoresMap.get(CommonUtils.getSquare(direction)))
-                            && isValidPosition(direction, predatorsMap.get(CommonUtils.getSquare(direction)));
-                })
-                .findFirst().orElse(0);
-    }
-
-    public static int[] getOppositeDirection(int direction) {
-        if (direction == 1) {
-            return new int[]{9, 6, 8, 3, 7};
-        } else if (direction == 2) {
-            return new int[]{7, 9, 8};
-        } else if (direction == 3) {
-            return new int[]{7, 4, 8, 1, 9};
-        } else if (direction == 4) {
-            return new int[]{3, 9, 6};
-        } else if (direction == 6) {
-            return new int[]{1, 7, 4};
-        } else if (direction == 7) {
-            return new int[]{3, 2, 6, 1, 9};
-        } else if (direction == 8) {
-            return new int[]{1, 3, 2};
-        } else if (direction == 9) {
-            return new int[]{1, 2, 4, 3, 7};
-        }
-        return new int[]{};
     }
 
     public static boolean isNotFreeSpace(Vector2 position) {
@@ -285,20 +253,10 @@ public class CommonUtils {
         changedRectangle.height = CELL_SIZE * 2 * multiplier + CELL_SIZE;
         changedRectangle.x = vector2.x;
         changedRectangle.y = vector2.y;
-//        rectangle.x = position.x;
-//        rectangle.y = position.y;
-//        Gdx.app.log("getCloseOrganisms ", String.valueOf(changedRectangle));
         return getSquares(changedRectangle).stream()
                 .map(organismsMap::get)
                 .flatMap(List::stream)
-                .filter(organism -> {
-                    Gdx.app.log("herbivore organism", changedRectangle + " " + organism);
-//                    if (changedRectangle.overlaps(organism.getUpdatedRectangle())) {
-//                        Gdx.app.log("overlaps! ", changedRectangle + " " + organism);
-//                    }
-                    return changedRectangle.overlaps(organism.getUpdatedRectangle());
-                })
-//                .filter(organism -> !rectangle.overlaps(organism.getUpdatedRectangle()))
+                .filter(organism -> changedRectangle.overlaps(organism.getUpdatedRectangle()))
                 .collect(Collectors.toList());
     }
 
@@ -340,18 +298,23 @@ public class CommonUtils {
         rectangle.y = position.y;
         return OrganismHolder.getOrganismHolder().getSquares().stream()
                 .filter(sqr -> sqr.overlaps(rectangle))
-                .findAny().orElseThrow(() -> new RuntimeException("square is not found! " + rectangle));
+                .findAny().orElse(null);
     }
 
     public static Rectangle getSquare(Rectangle rectangle) {
         return OrganismHolder.getOrganismHolder().getSquares().stream()
                 .filter(sqr -> sqr.overlaps(rectangle))
-                .findAny().orElseThrow(() -> new RuntimeException("square is not found!"));
+                .findAny().orElseThrow(() -> new RuntimeException("square is not found! " + rectangle));
     }
 
     public static List<Rectangle> getSquares(Rectangle rectangle) {
         return OrganismHolder.getOrganismHolder().getSquares().stream()
                 .filter(sqr -> sqr.overlaps(rectangle))
                 .collect(Collectors.toList());
+    }
+
+    public static boolean isMomentumChanged() {
+        int random = MathUtils.random(0, MAX_CHANCE);
+        return random > CHANCE_OF_MOMENTUM_CHANGE;
     }
 }

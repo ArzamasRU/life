@@ -9,7 +9,6 @@ import static ru.lavr.gdx.constants.Constant.START_HERBIVORE_FULLNESS;
 import static ru.lavr.gdx.constants.Constant.STEP_EXHAUSTION;
 import static ru.lavr.gdx.constants.Constant.STEP_HERBIVORE_FULLNESS;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -19,8 +18,6 @@ import ru.lavr.gdx.utils.CommonUtils;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class Herbivore extends Organism {
     private static final Pixmap pixmap;
@@ -47,7 +44,6 @@ public class Herbivore extends Organism {
 
     @Override
     public void move() {
-//        Gdx.app.log("h move 1 ", String.valueOf(position));
         if (CommonUtils.isNotFreeSpace(position)) {
             return;
         }
@@ -59,7 +55,6 @@ public class Herbivore extends Organism {
                 }
             }
         }
-//        Gdx.app.log("h move 2 ", String.valueOf(position));
     }
 
     private int getClosePredatorDirection() {
@@ -104,9 +99,12 @@ public class Herbivore extends Organism {
     private boolean runAway() {
         Organism predator = getClosePredator();
         if (predator != null) {
-            Vector2 oppositePosition = CommonUtils.getPositionFrom(position, predator.getPosition(), true, 1);
-            position.set(oppositePosition);
-            momentum = oppositeDirection;
+            Vector2 prevPosition = position;
+            Vector2 newPosition = CommonUtils.getPositionFrom(position, predator.getPosition(), true, 1);
+            if (!prevPosition.equals(newPosition)) {
+                position.set(newPosition);
+                momentum.set(new Vector2(newPosition).sub(prevPosition));
+            }
             return true;
         }
         return false;
@@ -127,20 +125,6 @@ public class Herbivore extends Organism {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public List<Integer> getAvailableDirections(Vector2 position) {
-        Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
-        return IntStream.range(1, 10)
-                .filter(i -> i != 5)
-                .filter(i -> {
-                    Vector2 direction = CommonUtils.getDirection(position, i);
-                    return CommonUtils.isValidDirection(direction)
-                            && CommonUtils.isValidPosition(direction, herbivoresMap.get(CommonUtils.getSquare(direction)));
-                })
-                .boxed()
-                .collect(Collectors.toList());
     }
 
     @Override

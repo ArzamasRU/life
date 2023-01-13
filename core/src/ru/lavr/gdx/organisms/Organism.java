@@ -1,19 +1,18 @@
 package ru.lavr.gdx.organisms;
 
 import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
-import static ru.lavr.gdx.constants.Constant.MAX_MOMENTUM;
-import static ru.lavr.gdx.constants.Constant.MOMENTUM;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.utils.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public abstract class Organism {
     protected final List<Organism> neighbors = new ArrayList<>();
@@ -24,7 +23,7 @@ public abstract class Organism {
     private Texture texture;
     private boolean outOfBorder;
     public boolean active = true;
-    protected int momentum = 0;
+    protected final Vector2 momentum = new Vector2();
     protected int fullness = 0;
 
     public Organism(boolean outOfBorder) {
@@ -50,8 +49,6 @@ public abstract class Organism {
 
     public abstract boolean reproduce();
 
-    public abstract List<Integer> getAvailableDirections(Vector2 position);
-
     public abstract void die();
 
     public abstract void addToOrganismsMap();
@@ -75,6 +72,22 @@ public abstract class Organism {
                 || CommonUtils.isNotValidDirection(position);
     }
 
+    public List<Integer> getAvailableDirections(Vector2 position) {
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        Map<Rectangle, List<Organism>> predatorsMap = organismHolder.getPredatorsMap();
+        Map<Rectangle, List<Organism>> herbivoresMap = organismHolder.getHerbivoresMap();
+        return IntStream.range(1, 10)
+                .filter(i -> i != 5)
+                .filter(i -> {
+                    Vector2 direction = CommonUtils.getDirection(position, i);
+                    return CommonUtils.isValidDirection(direction)
+                            && CommonUtils.isValidPosition(direction, predatorsMap.get(CommonUtils.getSquare(direction)))
+                            && CommonUtils.isValidPosition(direction, herbivoresMap.get(CommonUtils.getSquare(direction)));
+                })
+                .boxed()
+                .collect(Collectors.toList());
+    }
+
     public void render(Batch batch) {
         batch.draw(texture, position.x, position.y);
     }
@@ -84,27 +97,21 @@ public abstract class Organism {
     }
 
     protected void randomStep() {
-        Gdx.app.log("randomStep ", String.valueOf(position));
-        Vector2 randomPosition;
-        Vector2 nextDirection = CommonUtils.getDirection(position, momentum);
-        if (isMomentumChanged() || CommonUtils.isNotValidDirection(nextDirection)) {
-            int randomDirection;
-            randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
-            randomPosition = CommonUtils.getDirection(position, randomDirection);
-            momentum = randomDirection;
-        } else {
-            randomPosition = nextDirection;
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        Map<Rectangle, List<Organism>> predatorsMap = organismHolder.getPredatorsMap();
+        Map<Rectangle, List<Organism>> herbivoresMap = organismHolder.getHerbivoresMap();
+        Vector2 newPosition = new Vector2(position).add(momentum);
+        if (CommonUtils.isMomentumChanged()
+                || CommonUtils.isNotValidDirection(newPosition)
+                || CommonUtils.isNotValidPosition(newPosition, predatorsMap.get(CommonUtils.getSquare(newPosition)))
+                || CommonUtils.isNotValidPosition(newPosition, herbivoresMap.get(CommonUtils.getSquare(newPosition)))
+        ) {
+            int randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
+            newPosition = CommonUtils.getDirection(position, randomDirection);
+            momentum.set(new Vector2(newPosition).sub(position));
         }
-        updateOrganismsMap(randomPosition);
-        position.set(randomPosition);
-    }
-
-    protected boolean isMomentumChanged() {
-        if (momentum == 0) {
-            return true;
-        }
-        int random = MathUtils.random(0, MAX_MOMENTUM);
-        return random > MOMENTUM;
+        position.set(newPosition);
+        updateOrganismsMap(position);
     }
 
     public List<Organism> getNeighbors() {

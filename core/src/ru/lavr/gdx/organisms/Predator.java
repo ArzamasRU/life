@@ -3,14 +3,13 @@ package ru.lavr.gdx.organisms;
 import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
 import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
 import static ru.lavr.gdx.constants.Constant.MAX_FULLNESS;
-import static ru.lavr.gdx.constants.Constant.PREDATOR_VISION;
-import static ru.lavr.gdx.constants.Constant.PREDATOR_READY_FOR_DIVISION;
 import static ru.lavr.gdx.constants.Constant.PREDATOR_DIVISION_COST;
+import static ru.lavr.gdx.constants.Constant.PREDATOR_READY_FOR_DIVISION;
+import static ru.lavr.gdx.constants.Constant.PREDATOR_VISION;
 import static ru.lavr.gdx.constants.Constant.START_PREDATOR_FULLNESS;
 import static ru.lavr.gdx.constants.Constant.STEP_EXHAUSTION;
 import static ru.lavr.gdx.constants.Constant.STEP_PREDATOR_FULLNESS;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -21,8 +20,6 @@ import ru.lavr.gdx.utils.CommonUtils;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class Predator extends Organism {
     private static final Pixmap pixmap;
@@ -49,19 +46,17 @@ public class Predator extends Organism {
 
     @Override
     public void move() {
-//        Gdx.app.log("p move 1 ", String.valueOf(position));
         if (CommonUtils.isNotFreeSpace(position)) {
             return;
         }
         fullness -= STEP_EXHAUSTION;
         if (!reproduce()) {
-//            if (!eat()) {
+            if (!eat()) {
                 if (!follow()) {
                     randomStep();
                 }
-//            }
+            }
         }
-//        Gdx.app.log("p move 2 ", String.valueOf(position));
     }
 
     @Override
@@ -79,20 +74,6 @@ public class Predator extends Organism {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public List<Integer> getAvailableDirections(Vector2 position) {
-        Map<Rectangle, List<Organism>> predatorsMap = OrganismHolder.getOrganismHolder().getPredatorsMap();
-        return IntStream.range(1, 10)
-                .filter(i -> i != 5)
-                .filter(i -> {
-                    Vector2 direction = CommonUtils.getDirection(position, i);
-                    return CommonUtils.isValidDirection(direction)
-                            && CommonUtils.isValidPosition(direction, predatorsMap.get(CommonUtils.getSquare(direction)));
-                })
-                .boxed()
-                .collect(Collectors.toList());
     }
 
     @Override
@@ -129,12 +110,8 @@ public class Predator extends Organism {
     }
 
     private Organism getCloseHerbivore(int multiplier) {
-        Gdx.app.log("getCloseHerbivore ", String.valueOf(this));
         Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
         List<Organism> herbivores = CommonUtils.getCloseOrganisms(this.position, herbivoresMap, multiplier);
-        if (!herbivores.isEmpty()) {
-            Gdx.app.log("close ", this + " " + herbivores);
-        }
         return CommonUtils.getCloseOrganism(position, herbivores, multiplier);
     }
 
@@ -157,9 +134,7 @@ public class Predator extends Organism {
     private boolean follow() {
         Organism herbivore = getCloseHerbivore(PREDATOR_VISION);
         if (herbivore != null) {
-            Gdx.app.log("follow 1 ", position + " " + herbivore);
             Vector2 newPosition = CommonUtils.getPositionFrom(position, herbivore.getPosition(), false, 1);
-            Gdx.app.log("follow 2 ", position + " " + newPosition);
             updateOrganismsMap(newPosition);
             position.set(newPosition);
             return true;
