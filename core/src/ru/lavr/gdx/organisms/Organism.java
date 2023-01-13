@@ -24,7 +24,7 @@ public abstract class Organism {
     private boolean outOfBorder;
     public boolean active = true;
     protected final Vector2 momentum = new Vector2();
-    protected int fullness = 0;
+    protected int fullness = 1;
 
     public Organism(boolean outOfBorder) {
         this.active = false;
@@ -103,11 +103,16 @@ public abstract class Organism {
                 || CommonUtils.isNotValidPosition(newPosition, herbivoresMap.get(square))
         ) {
             int randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
-            newPosition = CommonUtils.getDirection(position, randomDirection);
-            momentum.set(new Vector2(newPosition).sub(position));
+            if (randomDirection != 0) {
+                newPosition = CommonUtils.getDirection(position, randomDirection);
+                momentum.set(new Vector2(newPosition).sub(position));
+                updateOrganismsMap(newPosition);
+                position.set(newPosition);
+                return;
+            }
         }
+        updateOrganismsMap(newPosition);
         position.set(newPosition);
-        updateOrganismsMap(position);
     }
 
     public List<Organism> getNeighbors() {

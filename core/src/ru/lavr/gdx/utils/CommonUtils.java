@@ -40,10 +40,10 @@ public class CommonUtils {
     }
 
     public static Integer getRandomDirection(List<Integer> directions) {
-        if (!directions.isEmpty()) {
-            return directions.get(MathUtils.random(1, directions.size()) - 1);
+        if (directions.isEmpty()) {
+            return 0;
         }
-        return 0;
+        return directions.get(MathUtils.random(1, directions.size()) - 1);
     }
 
     public static Vector2 getDirection(Vector2 position, int direction) {
@@ -183,7 +183,7 @@ public class CommonUtils {
                             && isValidPosition(oppositeDirection, predatorsMap.get(square))
                             && isValidPosition(oppositeDirection, herbivoresMap.get(square));
                 })
-                .findFirst().orElse(position);
+                .findFirst().orElse(null);
     }
 
     public static List<Vector2> getOppositeDirections(

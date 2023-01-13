@@ -5,8 +5,10 @@ import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
 import static ru.lavr.gdx.constants.Constant.MAX_FULLNESS;
 import static ru.lavr.gdx.constants.Constant.PLANT_DIVISION_COST;
 import static ru.lavr.gdx.constants.Constant.PLANT_READY_FOR_DIVISION;
+import static ru.lavr.gdx.constants.Constant.START_PLANT_FULLNESS;
 import static ru.lavr.gdx.constants.Constant.STEP_PLANT_FULLNESS;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -37,13 +39,15 @@ public class Plant extends Organism {
     public Plant() {
         super(texture);
         addToOrganismsMap();
-        updateNeighbors(this.position);
+        updateNeighbors(position);
+        fullness = START_PLANT_FULLNESS;
     }
 
     public Plant(Vector2 position) {
         super(texture, position);
         addToOrganismsMap();
-        updateNeighbors(this.position);
+        updateNeighbors(position);
+        fullness = START_PLANT_FULLNESS;
     }
 
     @Override
@@ -53,9 +57,10 @@ public class Plant extends Organism {
             return false;
         }
         Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
-        randomPosition = CommonUtils.getDirection(position, randomDirection);
-        Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
-        plantsMap.get(CommonUtils.getSquare(randomPosition)).add(new Plant(randomPosition));
+        if (randomDirection != 0) {
+            randomPosition = CommonUtils.getDirection(position, randomDirection);
+            new Plant(randomPosition);
+        }
         fullness -= PLANT_DIVISION_COST;
         return true;
     }
@@ -86,7 +91,7 @@ public class Plant extends Organism {
         Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
         List<Organism> plants = plantsMap.get(CommonUtils.getSquare(position));
         return CommonUtils.isNotValidDirection(position)
-                ||CommonUtils.isNotValidPosition(position, plants);
+                || CommonUtils.isNotValidPosition(position, plants);
     }
 
     @Override

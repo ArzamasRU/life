@@ -45,10 +45,6 @@ public class Herbivore extends Organism {
 
     @Override
     public void move() {
-//        Gdx.app.log("move h ", String.valueOf(this));
-//        Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
-//        herbivoresMap.values().stream().flatMap(List::stream)
-//                .forEach(org -> Gdx.app.log("org ", String.valueOf(org)));
         fullness -= STEP_EXHAUSTION;
         if (CommonUtils.isNotFreeSpace(position) || active == false) {
             return;
@@ -102,7 +98,8 @@ public class Herbivore extends Organism {
         if (predator != null) {
             Vector2 prevPosition = position;
             Vector2 newPosition = CommonUtils.getPositionFrom(position, predator.getPosition(), true, 1);
-            if (!prevPosition.equals(newPosition)) {
+            if (newPosition != null && !prevPosition.equals(newPosition)) {
+                updateOrganismsMap(newPosition);
                 position.set(newPosition);
                 momentum.set(new Vector2(newPosition).sub(prevPosition));
             }
@@ -119,9 +116,10 @@ public class Herbivore extends Organism {
                 return false;
             }
             Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
-            randomPosition = CommonUtils.getDirection(position, randomDirection);
-            Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
-            herbivoresMap.get(CommonUtils.getSquare(randomPosition)).add(new Herbivore(randomPosition));
+            if (randomDirection != 0) {
+                randomPosition = CommonUtils.getDirection(position, randomDirection);
+                new Herbivore(randomPosition);
+            }
             fullness -= HERBIVORE_DIVISION_COST;
             return true;
         }

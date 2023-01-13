@@ -67,9 +67,10 @@ public class Predator extends Organism {
                 return false;
             }
             Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
-            randomPosition = CommonUtils.getDirection(position, randomDirection);
-            Map<Rectangle, List<Organism>> predatorsMap = OrganismHolder.getOrganismHolder().getPredatorsMap();
-            predatorsMap.get(CommonUtils.getSquare(randomPosition)).add(new Predator(randomPosition));
+            if (randomDirection != 0) {
+                randomPosition = CommonUtils.getDirection(position, randomDirection);
+                new Predator(randomPosition);
+            }
             fullness -= PREDATOR_DIVISION_COST;
             return true;
         }
@@ -119,11 +120,6 @@ public class Predator extends Organism {
     private boolean eat() {
         Organism herbivore = getCloseHerbivore(1);
         if (herbivore != null) {
-            Gdx.app.log("eat ", this + " " + herbivore);
-//            Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
-//            Gdx.app.log("eat ", this + " " + herbivore);
-//            herbivoresMap.values().stream().flatMap(List::stream)
-//                    .forEach(org -> Gdx.app.log("org ", String.valueOf(org)));
             herbivore.die();
             if (fullness < MAX_FULLNESS) {
                 fullness += STEP_PREDATOR_FULLNESS;
@@ -136,10 +132,11 @@ public class Predator extends Organism {
     private boolean follow() {
         Organism herbivore = getCloseHerbivore(PREDATOR_VISION);
         if (herbivore != null) {
-            Gdx.app.log("follow ", this + " " + herbivore);
             Vector2 newPosition = CommonUtils.getPositionFrom(position, herbivore.getPosition(), false, 1);
-            updateOrganismsMap(newPosition);
-            position.set(newPosition);
+            if (newPosition != null) {
+                updateOrganismsMap(newPosition);
+                position.set(newPosition);
+            }
             return true;
         }
         return false;
