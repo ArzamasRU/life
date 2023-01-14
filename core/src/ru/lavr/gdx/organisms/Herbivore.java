@@ -80,26 +80,28 @@ public class Herbivore extends Organism {
     @Override
     public void die() {
         Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
-        herbivoresMap.get(CommonUtils.getSquare(getUpdatedRectangle())).remove(this);
+        herbivoresMap.get(currSquare).remove(this);
         active = false;
     }
 
     @Override
     public void addToOrganismsMap() {
         Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
-        herbivoresMap.get(CommonUtils.getSquare(getUpdatedRectangle())).add(this);
+        currSquare.set(CommonUtils.getSquare(getUpdatedRectangle()));
+        herbivoresMap.get(currSquare).add(this);
     }
 
     @Override
     public void updateOrganismsMap(Vector2 newPosition) {
-        Rectangle currentRect = CommonUtils.getSquare(getUpdatedRectangle());
         Rectangle newRect = CommonUtils.getSquare(newPosition);
-        if (!currentRect.equals(newRect)) {
+        if (!currSquare.equals(newRect)) {
             Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
-            herbivoresMap.get(currentRect).remove(this);
-            herbivoresMap.get(newRect).add(this);
+            herbivoresMap.get(currSquare).remove(this);
+            currSquare.set(newRect);
+            herbivoresMap.get(currSquare).add(this);
         }
     }
+
 
     private Organism getClosePredator(int multiplier) {
         Map<Rectangle, List<Organism>> predatorsMap = OrganismHolder.getOrganismHolder().getPredatorsMap();

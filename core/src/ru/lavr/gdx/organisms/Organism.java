@@ -26,6 +26,7 @@ public abstract class Organism {
     protected boolean active = true;
     protected final Vector2 momentum = new Vector2();
     protected int fullness = 1;
+    protected final Rectangle currSquare = new Rectangle();
 
     public Organism(boolean outOfBorder) {
         this.active = false;

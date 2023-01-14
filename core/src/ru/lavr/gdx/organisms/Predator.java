@@ -80,24 +80,25 @@ public class Predator extends Organism {
     @Override
     public void die() {
         Map<Rectangle, List<Organism>> predatorsMap = OrganismHolder.getOrganismHolder().getPredatorsMap();
-        predatorsMap.get(CommonUtils.getSquare(getUpdatedRectangle())).remove(this);
+        predatorsMap.get(currSquare).remove(this);
         active = false;
     }
 
     @Override
     public void addToOrganismsMap() {
         Map<Rectangle, List<Organism>> predatorsMap = OrganismHolder.getOrganismHolder().getPredatorsMap();
-        predatorsMap.get(CommonUtils.getSquare(getUpdatedRectangle())).add(this);
+        currSquare.set(CommonUtils.getSquare(getUpdatedRectangle()));
+        predatorsMap.get(currSquare).add(this);
     }
 
     @Override
     public void updateOrganismsMap(Vector2 newPosition) {
-        Rectangle currentRect = CommonUtils.getSquare(getUpdatedRectangle());
         Rectangle newRect = CommonUtils.getSquare(newPosition);
-        if (!currentRect.equals(newRect)) {
+        if (!currSquare.equals(newRect)) {
             Map<Rectangle, List<Organism>> predatorsMap = OrganismHolder.getOrganismHolder().getPredatorsMap();
-            predatorsMap.get(currentRect).remove(this);
-            predatorsMap.get(newRect).add(this);
+            predatorsMap.get(currSquare).remove(this);
+            currSquare.set(newRect);
+            predatorsMap.get(currSquare).add(this);
         }
     }
 

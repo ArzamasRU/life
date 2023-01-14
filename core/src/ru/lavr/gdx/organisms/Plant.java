@@ -80,7 +80,7 @@ public class Plant extends Organism {
     @Override
     public void die() {
         Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
-        plantsMap.get(CommonUtils.getSquare(getUpdatedRectangle())).remove(this);
+        plantsMap.get(currSquare).remove(this);
         getNeighbors().forEach(neighbor -> neighbor.getNeighbors().remove(this));
         active = false;
     }
@@ -111,7 +111,8 @@ public class Plant extends Organism {
     @Override
     public void addToOrganismsMap() {
         Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
-        plantsMap.get(CommonUtils.getSquare(getUpdatedRectangle())).add(this);
+        currSquare.set(CommonUtils.getSquare(getUpdatedRectangle()));
+        plantsMap.get(currSquare).add(this);
     }
 
     @Override
