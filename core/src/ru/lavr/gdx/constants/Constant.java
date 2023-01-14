@@ -8,19 +8,22 @@ public class Constant {
     //    вероятность изменения импульса движения (если = 100, приведет к бесконечному циклу)
     public static final int CHANCE_OF_MOMENTUM_CHANGE = 90;
     public static final int MAX_CHANCE = 100;
-    public static final int SQUARE_SIZE = STEP * 10;
+    public static final int SQUARE_SIZE = STEP * 20;
 
     //    общие свойства
     public static final int MAX_FULLNESS = 300;
     public static final int STEP_EXHAUSTION = 1;
+    public static final int EAT_RANGE = 1;
+    public static final int REPRODUCE_RANGE = 1;
 
     //    свойства plant
     public static final int PLANT_DIVISION_COST = 99;
-    public static final int STEP_PLANT_FULLNESS = 1;
+    public static final int STEP_PLANT_FULLNESS = 10;
     public static final int START_PLANT_FULLNESS = 1;
     public static final int PLANT_READY_FOR_DIVISION = 100;
 
     //    свойства herbivore
+    public static final int HERBIVORE_VISION = 1;
     public static final int HERBIVORE_DIVISION_COST = 60;
     public static final int STEP_HERBIVORE_FULLNESS = 20;
     public static final int START_HERBIVORE_FULLNESS = 150;

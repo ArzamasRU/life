@@ -8,7 +8,6 @@ import static ru.lavr.gdx.constants.Constant.PLANT_READY_FOR_DIVISION;
 import static ru.lavr.gdx.constants.Constant.START_PLANT_FULLNESS;
 import static ru.lavr.gdx.constants.Constant.STEP_PLANT_FULLNESS;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;

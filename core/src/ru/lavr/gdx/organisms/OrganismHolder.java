@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class OrganismHolder {
     private final static OrganismHolder organismHolder = new OrganismHolder();
@@ -64,5 +65,27 @@ public class OrganismHolder {
 
     public List<Organism> getPredators() {
         return predators;
+    }
+
+    public void updateOrganisms() {
+        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
+        List<Organism> plants = organismHolder.getPlants();
+        List<Organism> herbivores = organismHolder.getHerbivores();
+        List<Organism> predators = organismHolder.getPredators();
+        Map<Rectangle, List<Organism>> plantsMap = organismHolder.getPlantsMap();
+        Map<Rectangle, List<Organism>> herbivoresMap = organismHolder.getHerbivoresMap();
+        Map<Rectangle, List<Organism>> predatorsMap = organismHolder.getPredatorsMap();
+
+        plantsMap.values().forEach(orgs -> orgs.removeIf(org -> org.getFullness() <= 0));
+        herbivoresMap.values().forEach(orgs -> orgs.removeIf(org -> org.getFullness() <= 0));
+        predatorsMap.values().forEach(orgs -> orgs.removeIf(org -> org.getFullness() <= 0));
+
+        plants.clear();
+        herbivores.clear();
+        predators.clear();
+
+        plants.addAll(plantsMap.values().stream().flatMap(List::stream).collect(Collectors.toList()));
+        herbivores.addAll(herbivoresMap.values().stream().flatMap(List::stream).collect(Collectors.toList()));
+        predators.addAll(predatorsMap.values().stream().flatMap(List::stream).collect(Collectors.toList()));
     }
 }

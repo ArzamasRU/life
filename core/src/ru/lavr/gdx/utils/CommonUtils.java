@@ -9,6 +9,7 @@ import static ru.lavr.gdx.constants.Constant.RIGHT_EDGE;
 import static ru.lavr.gdx.constants.Constant.STEP;
 import static ru.lavr.gdx.constants.Constant.UPPER_EDGE;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -33,10 +34,6 @@ public class CommonUtils {
         float x = MathUtils.random(LEFT_EDGE / CELL_SIZE, RIGHT_EDGE / CELL_SIZE);
         float y = MathUtils.random(BOTTOM_EDGE / CELL_SIZE, UPPER_EDGE / CELL_SIZE);
         return vector2.set(x * CELL_SIZE, y * CELL_SIZE);
-    }
-
-    public static int getRandomDirection() {
-        return MathUtils.random(1, 9);
     }
 
     public static Integer getRandomDirection(List<Integer> directions) {
@@ -112,12 +109,6 @@ public class CommonUtils {
                 });
     }
 
-    public static boolean isOrganismClose(Vector2 position, List<Organism> organisms) {
-        return IntStream.range(1, 10)
-                .mapToObj(i -> getDirection(position, i, 1))
-                .anyMatch(newPosition -> isNotValidPosition(newPosition, organisms));
-    }
-
     private static Organism getOrganism(Vector2 position, List<Organism> organisms) {
         rectangle.x = position.x;
         rectangle.y = position.y;
@@ -139,43 +130,26 @@ public class CommonUtils {
                 .findAny().orElse(null);
     }
 
-    public static Organism getCloseOrganism(Vector2 position, List<Organism> organisms) {
-        return IntStream.range(1, 10)
-                .filter(i -> i != 5)
-                .mapToObj(i -> getDirection(position, i, 1))
-                .map(newPosition -> getOrganism(newPosition, organisms))
-                .filter(Objects::nonNull)
-                .findAny().orElse(null);
+    public static List<Organism> getOrganismsInSquare(
+            Vector2 position, Map<Rectangle, List<Organism>> organismsMap, int multiplier) {
+        Vector2 vector2 = new Vector2(position);
+        vector2.add(-STEP * multiplier, -STEP * multiplier);
+        changedRectangle.width = CELL_SIZE * 2 * multiplier + CELL_SIZE;
+        changedRectangle.height = CELL_SIZE * 2 * multiplier + CELL_SIZE;
+        changedRectangle.x = vector2.x;
+        changedRectangle.y = vector2.y;
+        return getSquares(changedRectangle).stream()
+                .map(organismsMap::get)
+                .flatMap(List::stream)
+                .filter(organism -> changedRectangle.overlaps(organism.getUpdatedRectangle()))
+                .collect(Collectors.toList());
     }
 
-    public static Integer getOrganismIndex(Vector2 position, List<Organism> organisms) {
-        rectangle.x = position.x;
-        rectangle.y = position.y;
-        return IntStream.range(0, organisms.size())
-                .filter(i -> rectangle.overlaps(organisms.get(i).getUpdatedRectangle()))
-                .boxed()
-                .findAny().orElse(null);
-    }
-
-    public static Integer getCloseOrganismIndex(Vector2 position, List<Organism> organisms) {
-        return IntStream.range(1, 10)
-                .mapToObj(i -> getDirection(position, i, 1))
-                .map(newPosition -> getOrganismIndex(newPosition, organisms))
-                .filter(Objects::nonNull)
-                .findAny().orElse(null);
-    }
-
-    public static int getCloseOrganismPosition(Vector2 position, List<Organism> organisms) {
-        return IntStream.range(1, 10)
-                .filter(i -> isNotValidPosition(getDirection(position, i, 1), organisms))
-                .findAny().orElse(0);
-    }
-
-    public static Vector2 getPositionFrom(Vector2 position, Vector2 anotherPosition, boolean opposite, int multiplier) {
+    public static Vector2 getPositionFrom(Vector2 position, Vector2 anotherPosition, boolean opposite) {
         OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
         Map<Rectangle, List<Organism>> herbivoresMap = organismHolder.getHerbivoresMap();
         Map<Rectangle, List<Organism>> predatorsMap = organismHolder.getPredatorsMap();
-        return getOppositeDirections(position, anotherPosition, opposite, multiplier).stream()
+        return getOppositeDirections(position, anotherPosition, opposite).stream()
                 .filter(oppositeDirection -> {
                     Rectangle square = CommonUtils.getSquare(oppositeDirection);
                     return Objects.nonNull(square)
@@ -187,7 +161,7 @@ public class CommonUtils {
     }
 
     public static List<Vector2> getOppositeDirections(
-            Vector2 position, Vector2 anotherPosition, boolean opposite, int multiplier) {
+            Vector2 position, Vector2 anotherPosition, boolean opposite) {
         float deltaX;
         float deltaY;
         if (opposite) {
@@ -198,14 +172,14 @@ public class CommonUtils {
             deltaY = anotherPosition.y - position.y;
         }
         if (deltaX > 0) {
-            deltaX = STEP * multiplier;
+            deltaX = STEP;
         } else if (deltaX < 0) {
-            deltaX = -STEP * multiplier;
+            deltaX = -STEP;
         }
         if (deltaY > 0) {
-            deltaY = STEP * multiplier;
+            deltaY = STEP;
         } else if (deltaY < 0) {
-            deltaY = -STEP * multiplier;
+            deltaY = -STEP;
         }
         return Arrays.asList(new Vector2(position).add(deltaX, deltaY),
                 new Vector2(position).add(deltaX, 0),
@@ -243,52 +217,6 @@ public class CommonUtils {
         return neighbors;
     }
 
-    public static List<Organism> getCloseOrganisms(
-            Vector2 position, Map<Rectangle, List<Organism>> organismsMap, int multiplier) {
-        Vector2 vector2 = new Vector2(position);
-        vector2.add(-STEP * multiplier, -STEP * multiplier);
-        changedRectangle.width = CELL_SIZE * 2 * multiplier + CELL_SIZE;
-        changedRectangle.height = CELL_SIZE * 2 * multiplier + CELL_SIZE;
-        changedRectangle.x = vector2.x;
-        changedRectangle.y = vector2.y;
-        return getSquares(changedRectangle).stream()
-                .map(organismsMap::get)
-                .flatMap(List::stream)
-                .filter(organism -> changedRectangle.overlaps(organism.getUpdatedRectangle()))
-                .collect(Collectors.toList());
-    }
-
-    public static void setInactiveOrganisms(List<Organism> organisms) {
-        organisms.stream()
-                .filter(org -> org.getNeighbors().size() >= 8)
-                .filter(org -> org.getNeighbors().stream()
-                        .map(Organism::getNeighbors)
-                        .allMatch(ns -> ns.size() >= 8))
-                .forEach(org -> org.setActive(false));
-    }
-
-    public static void updateOrganisms() {
-        OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
-        List<Organism> plants = organismHolder.getPlants();
-        List<Organism> herbivores = organismHolder.getHerbivores();
-        List<Organism> predators = organismHolder.getPredators();
-        Map<Rectangle, List<Organism>> plantsMap = organismHolder.getPlantsMap();
-        Map<Rectangle, List<Organism>> herbivoresMap = organismHolder.getHerbivoresMap();
-        Map<Rectangle, List<Organism>> predatorsMap = organismHolder.getPredatorsMap();
-
-        plantsMap.values().forEach(orgs -> orgs.removeIf(org -> org.getFullness() <= 0));
-        herbivoresMap.values().forEach(orgs -> orgs.removeIf(org -> org.getFullness() <= 0));
-        predatorsMap.values().forEach(orgs -> orgs.removeIf(org -> org.getFullness() <= 0));
-
-        plants.clear();
-        herbivores.clear();
-        predators.clear();
-
-        plants.addAll(plantsMap.values().stream().flatMap(List::stream).collect(Collectors.toList()));
-        herbivores.addAll(herbivoresMap.values().stream().flatMap(List::stream).collect(Collectors.toList()));
-        predators.addAll(predatorsMap.values().stream().flatMap(List::stream).collect(Collectors.toList()));
-    }
-
     public static Rectangle getSquare(Vector2 position) {
         rectangle.x = position.x;
         rectangle.y = position.y;
@@ -300,7 +228,7 @@ public class CommonUtils {
     public static Rectangle getSquare(Rectangle rectangle) {
         return OrganismHolder.getOrganismHolder().getSquares().stream()
                 .filter(sqr -> sqr.overlaps(rectangle))
-                .findAny().orElseThrow(() -> new RuntimeException("square is not found! " + rectangle));
+                .findAny().orElseThrow(null);
     }
 
     public static List<Rectangle> getSquares(Rectangle rectangle) {

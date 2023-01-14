@@ -1,6 +1,7 @@
 package ru.lavr.gdx.organisms;
 
 import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
+import static ru.lavr.gdx.constants.Constant.REPRODUCE_RANGE;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -21,8 +22,8 @@ public abstract class Organism {
 
     protected Vector2 position;
     private Texture texture;
-    private boolean outOfBorder;
-    public boolean active = true;
+    protected boolean outOfBorder;
+    protected boolean active = true;
     protected final Vector2 momentum = new Vector2();
     protected int fullness = 1;
 
@@ -36,7 +37,7 @@ public abstract class Organism {
         Vector2 randomPosition;
         do {
             randomPosition = CommonUtils.getRandomPosition();
-        } while (isNotValidPosition(randomPosition, 1));
+        } while (isNotValidPosition(randomPosition, REPRODUCE_RANGE));
         this.position = randomPosition;
     }
 
@@ -120,13 +121,9 @@ public abstract class Organism {
     }
 
     public Rectangle getUpdatedRectangle() {
-        this.rectangle.x = this.position.x;
-        this.rectangle.y = this.position.y;
-        return this.rectangle;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
+        rectangle.x = position.x;
+        rectangle.y = position.y;
+        return rectangle;
     }
 
     public boolean isNotOutOfBorder() {

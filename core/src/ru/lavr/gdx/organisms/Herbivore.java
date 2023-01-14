@@ -2,14 +2,15 @@ package ru.lavr.gdx.organisms;
 
 import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
 import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
+import static ru.lavr.gdx.constants.Constant.EAT_RANGE;
 import static ru.lavr.gdx.constants.Constant.HERBIVORE_DIVISION_COST;
 import static ru.lavr.gdx.constants.Constant.HERBIVORE_READY_FOR_DIVISION;
+import static ru.lavr.gdx.constants.Constant.HERBIVORE_VISION;
 import static ru.lavr.gdx.constants.Constant.MAX_FULLNESS;
 import static ru.lavr.gdx.constants.Constant.START_HERBIVORE_FULLNESS;
 import static ru.lavr.gdx.constants.Constant.STEP_EXHAUSTION;
 import static ru.lavr.gdx.constants.Constant.STEP_HERBIVORE_FULLNESS;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -58,56 +59,6 @@ public class Herbivore extends Organism {
         }
     }
 
-    private int getClosePredatorDirection() {
-        Map<Rectangle, List<Organism>> predatorsMap = OrganismHolder.getOrganismHolder().getPredatorsMap();
-        List<Organism> closeOrganisms = CommonUtils.getCloseOrganisms(this.position, predatorsMap, 1);
-        return CommonUtils.getCloseOrganismPosition(position, closeOrganisms);
-    }
-
-    private Organism getClosePredator() {
-        List<Organism> predators = OrganismHolder.getOrganismHolder().getPredators();
-        return CommonUtils.getCloseOrganism(position, predators, 1);
-    }
-
-    private Integer getClosePlantIndex() {
-        Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
-        List<Organism> closeOrganisms = CommonUtils.getCloseOrganisms(this.position, plantsMap, 1);
-        return CommonUtils.getCloseOrganismIndex(position, closeOrganisms);
-    }
-
-    private Organism getClosePlant() {
-        Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
-        List<Organism> plants = CommonUtils.getCloseOrganisms(this.position, plantsMap, 1);
-        return CommonUtils.getCloseOrganism(position, plants);
-    }
-
-    private boolean eat() {
-        Organism plant = getClosePlant();
-        if (plant != null) {
-            plant.die();
-            if (fullness < MAX_FULLNESS) {
-                fullness += STEP_HERBIVORE_FULLNESS;
-            }
-            return true;
-        }
-        return false;
-    }
-
-    private boolean runAway() {
-        Organism predator = getClosePredator();
-        if (predator != null) {
-            Vector2 prevPosition = position;
-            Vector2 newPosition = CommonUtils.getPositionFrom(position, predator.getPosition(), true, 1);
-            if (newPosition != null && !prevPosition.equals(newPosition)) {
-                updateOrganismsMap(newPosition);
-                position.set(newPosition);
-                momentum.set(new Vector2(newPosition).sub(prevPosition));
-            }
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public boolean reproduce() {
         if (fullness >= HERBIVORE_READY_FOR_DIVISION) {
@@ -148,5 +99,44 @@ public class Herbivore extends Organism {
             herbivoresMap.get(currentRect).remove(this);
             herbivoresMap.get(newRect).add(this);
         }
+    }
+
+    private Organism getClosePredator(int multiplier) {
+        Map<Rectangle, List<Organism>> predatorsMap = OrganismHolder.getOrganismHolder().getPredatorsMap();
+        List<Organism> predators = CommonUtils.getOrganismsInSquare(position, predatorsMap, multiplier);
+        return CommonUtils.getCloseOrganism(position, predators, multiplier);
+    }
+
+    private Organism getClosePlant(int multiplier) {
+        Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
+        List<Organism> plants = CommonUtils.getOrganismsInSquare(position, plantsMap, multiplier);
+        return CommonUtils.getCloseOrganism(position, plants, multiplier);
+    }
+
+    private boolean eat() {
+        Organism plant = getClosePlant(EAT_RANGE);
+        if (plant != null) {
+            plant.die();
+            if (fullness < MAX_FULLNESS) {
+                fullness += STEP_HERBIVORE_FULLNESS;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private boolean runAway() {
+        Organism predator = getClosePredator(HERBIVORE_VISION);
+        if (predator != null) {
+            Vector2 prevPosition = position;
+            Vector2 newPosition = CommonUtils.getPositionFrom(position, predator.getPosition(), true);
+            if (newPosition != null && !prevPosition.equals(newPosition)) {
+                updateOrganismsMap(newPosition);
+                position.set(newPosition);
+                momentum.set(new Vector2(newPosition).sub(prevPosition));
+            }
+            return true;
+        }
+        return false;
     }
 }
