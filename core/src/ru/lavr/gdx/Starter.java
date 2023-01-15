@@ -1,5 +1,7 @@
 package ru.lavr.gdx;
 
+import static ru.lavr.gdx.constants.Constant.ADD_QTY_PLANTS;
+import static ru.lavr.gdx.constants.Constant.MAX_QTY_PLANTS;
 import static ru.lavr.gdx.constants.Constant.PAUSE;
 
 import com.badlogic.gdx.Application;
@@ -32,9 +34,9 @@ public class Starter extends ApplicationAdapter {
         plants = organismHolder.getPlants();
         herbivores = organismHolder.getHerbivores();
         predators = organismHolder.getPredators();
-        IntStream.range(0, 1000).forEach(i -> plants.add(new Plant()));
-        IntStream.range(0, 100).forEach(i -> herbivores.add(new Herbivore()));
-        IntStream.range(0, 100).forEach(i -> predators.add(new Predator()));
+        IntStream.range(0, 5000).forEach(i -> plants.add(new Plant()));
+        IntStream.range(0, 200).forEach(i -> herbivores.add(new Herbivore()));
+        IntStream.range(0, 200).forEach(i -> predators.add(new Predator()));
     }
 
     @Override
@@ -48,8 +50,8 @@ public class Starter extends ApplicationAdapter {
         herbivores.forEach(organism -> organism.render(batch));
         predators.forEach(organism -> organism.render(batch));
 
-        if (plants.size() < 1000) {
-            IntStream.range(0, 10).forEach(i -> plants.add(new Plant()));
+        if (plants.size() < MAX_QTY_PLANTS) {
+            IntStream.range(0, ADD_QTY_PLANTS).forEach(i -> plants.add(new Plant()));
         }
 
         plants.forEach(Organism::move);

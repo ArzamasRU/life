@@ -68,7 +68,7 @@ public abstract class Organism {
                 || CommonUtils.isNotValidDirection(position);
     }
 
-    public List<Integer> getAvailableDirections(Vector2 position) {
+    public List<Integer> getAvailableDirections(Vector2 position, Rectangle curRect) {
         OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
         Map<Rectangle, List<Organism>> predatorsMap = organismHolder.getPredatorsMap();
         Map<Rectangle, List<Organism>> herbivoresMap = organismHolder.getHerbivoresMap();
@@ -76,7 +76,7 @@ public abstract class Organism {
                 .filter(i -> i != 5)
                 .filter(i -> {
                     Vector2 direction = CommonUtils.getDirection(position, i);
-                    Rectangle square = CommonUtils.getSquare(direction);
+                    Rectangle square = CommonUtils.getSquare(direction, curRect);
                     return CommonUtils.isValidDirection(direction)
                             && CommonUtils.isValidPosition(direction, predatorsMap.get(square))
                             && CommonUtils.isValidPosition(direction, herbivoresMap.get(square));
@@ -98,13 +98,13 @@ public abstract class Organism {
         Map<Rectangle, List<Organism>> predatorsMap = organismHolder.getPredatorsMap();
         Map<Rectangle, List<Organism>> herbivoresMap = organismHolder.getHerbivoresMap();
         Vector2 newPosition = new Vector2(position).add(momentum);
-        Rectangle square = CommonUtils.getSquare(newPosition);
+        Rectangle square = CommonUtils.getSquare(newPosition, currSquare);
         if (CommonUtils.isMomentumChanged()
                 || CommonUtils.isNotValidDirection(newPosition)
                 || CommonUtils.isNotValidPosition(newPosition, predatorsMap.get(square))
                 || CommonUtils.isNotValidPosition(newPosition, herbivoresMap.get(square))
         ) {
-            int randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
+            int randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position, currSquare));
             if (randomDirection != 0) {
                 newPosition = CommonUtils.getDirection(position, randomDirection);
                 momentum.set(new Vector2(newPosition).sub(position));

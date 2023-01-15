@@ -1,7 +1,9 @@
 package ru.lavr.gdx.organisms;
 
+import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
 import static ru.lavr.gdx.constants.Constant.RIGHT_EDGE;
 import static ru.lavr.gdx.constants.Constant.SQUARE_SIZE;
+import static ru.lavr.gdx.constants.Constant.STEP;
 import static ru.lavr.gdx.constants.Constant.UPPER_EDGE;
 
 import com.badlogic.gdx.math.Rectangle;
@@ -21,21 +23,22 @@ public class OrganismHolder {
     private final Map<Rectangle, List<Organism>> plantsMap = new HashMap<>();
     private final Map<Rectangle, List<Organism>> herbivoresMap = new HashMap<>();
     private final Map<Rectangle, List<Organism>> predatorsMap = new HashMap<>();
-    private final List<Rectangle> squares = new ArrayList<>();
+    private final Map<Rectangle, List<Rectangle>> squares = new HashMap<>();
 
     {
         for (int x = 0; x < RIGHT_EDGE; x += SQUARE_SIZE) {
             for (int y = 0; y < UPPER_EDGE; y += SQUARE_SIZE) {
                 Rectangle square = new Rectangle(x, y, SQUARE_SIZE, SQUARE_SIZE);
-                squares.add(square);
+                squares.put(square, new ArrayList<>());
                 plantsMap.put(square, new ArrayList<>());
                 herbivoresMap.put(square, new ArrayList<>());
                 predatorsMap.put(square, new ArrayList<>());
             }
         }
+        squares.forEach((square, neighbors) -> neighbors.addAll(OrganismHolder.this.getCloseSquares(square)));
     }
 
-    public List<Rectangle> getSquares() {
+    public Map<Rectangle, List<Rectangle>> getSquares() {
         return squares;
     }
 
@@ -87,5 +90,13 @@ public class OrganismHolder {
         plants.addAll(plantsMap.values().stream().flatMap(List::stream).collect(Collectors.toList()));
         herbivores.addAll(herbivoresMap.values().stream().flatMap(List::stream).collect(Collectors.toList()));
         predators.addAll(predatorsMap.values().stream().flatMap(List::stream).collect(Collectors.toList()));
+    }
+
+    private List<Rectangle> getCloseSquares(Rectangle rectangle) {
+        Rectangle bigRect = new Rectangle(rectangle.x - STEP, rectangle.y - STEP,
+                rectangle.width + CELL_SIZE * 2, rectangle.height + CELL_SIZE * 2);
+        return squares.keySet().stream()
+                .filter(sqr -> sqr.overlaps(bigRect))
+                .collect(Collectors.toList());
     }
 }

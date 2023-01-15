@@ -55,7 +55,7 @@ public class Plant extends Organism {
         if (neighbors.size() >= 8) {
             return false;
         }
-        Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
+        Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position, currSquare));
         if (randomDirection != 0) {
             randomPosition = CommonUtils.getDirection(position, randomDirection);
             new Plant(randomPosition);
@@ -95,7 +95,7 @@ public class Plant extends Organism {
     }
 
     @Override
-    public List<Integer> getAvailableDirections(Vector2 position) {
+    public List<Integer> getAvailableDirections(Vector2 position, Rectangle curRect ) {
         Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
         return IntStream.range(1, 10)
                 .filter(i -> i != 5)
@@ -103,7 +103,7 @@ public class Plant extends Organism {
                     Vector2 direction = CommonUtils.getDirection(position, i);
                     return CommonUtils.isValidDirection(direction)
                             && CommonUtils.isValidPosition(direction, getNeighbors())
-                            && CommonUtils.isValidPosition(direction, plantsMap.get(CommonUtils.getSquare(direction)));
+                            && CommonUtils.isValidPosition(direction, plantsMap.get(CommonUtils.getSquare(direction, curRect)));
                 })
                 .boxed()
                 .collect(Collectors.toList());
@@ -121,7 +121,7 @@ public class Plant extends Organism {
     }
 
     private void updateNeighbors(Vector2 position) {
-        List<Organism> neighbors = CommonUtils.getNeighbors(position);
+        List<Organism> neighbors = CommonUtils.getNeighbors(position, currSquare);
         neighbors.stream()
                 .filter(Organism::isNotOutOfBorder)
                 .map(Organism::getNeighbors)

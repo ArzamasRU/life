@@ -50,7 +50,7 @@ public class Herbivore extends Organism {
             return;
         }
         fullness -= STEP_EXHAUSTION;
-        if (CommonUtils.isNotFreeSpace(position)) {
+        if (CommonUtils.isNotFreeSpace(position, currSquare)) {
             eat();
             return;
         }
@@ -67,10 +67,10 @@ public class Herbivore extends Organism {
     public boolean reproduce() {
         if (fullness >= HERBIVORE_READY_FOR_DIVISION) {
             Vector2 randomPosition;
-            if (CommonUtils.isNotFreeSpace(position)) {
+            if (CommonUtils.isNotFreeSpace(position, currSquare)) {
                 return false;
             }
-            Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position));
+            Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position, currSquare));
             if (randomDirection != 0) {
                 randomPosition = CommonUtils.getDirection(position, randomDirection);
                 new Herbivore(randomPosition);
@@ -97,7 +97,7 @@ public class Herbivore extends Organism {
 
     @Override
     public void updateOrganismsMap(Vector2 newPosition) {
-        Rectangle newRect = CommonUtils.getSquare(newPosition);
+        Rectangle newRect = CommonUtils.getSquare(newPosition, currSquare);
         if (!currSquare.equals(newRect)) {
             Map<Rectangle, List<Organism>> herbivoresMap = OrganismHolder.getOrganismHolder().getHerbivoresMap();
             herbivoresMap.get(currSquare).remove(this);
@@ -109,13 +109,13 @@ public class Herbivore extends Organism {
 
     private Organism getClosePredator(int multiplier) {
         Map<Rectangle, List<Organism>> predatorsMap = OrganismHolder.getOrganismHolder().getPredatorsMap();
-        List<Organism> predators = CommonUtils.getOrganismsInSquare(position, predatorsMap, multiplier);
+        List<Organism> predators = CommonUtils.getOrganismsInSquare(position, currSquare, predatorsMap, multiplier);
         return CommonUtils.getCloseOrganism(position, predators, multiplier);
     }
 
     private Organism getClosePlant(int multiplier) {
         Map<Rectangle, List<Organism>> plantsMap = OrganismHolder.getOrganismHolder().getPlantsMap();
-        List<Organism> plants = CommonUtils.getOrganismsInSquare(position, plantsMap, multiplier);
+        List<Organism> plants = CommonUtils.getOrganismsInSquare(position, currSquare, plantsMap, multiplier);
         return CommonUtils.getCloseOrganism(position, plants, multiplier);
     }
 
@@ -135,7 +135,7 @@ public class Herbivore extends Organism {
         Organism predator = getClosePredator(HERBIVORE_VISION);
         if (predator != null) {
             Vector2 prevPosition = position;
-            Vector2 newPosition = CommonUtils.getPositionFrom(position, predator.getPosition(), true);
+            Vector2 newPosition = CommonUtils.getPositionFrom(position, currSquare, predator.getPosition(), true);
             if (newPosition != null && !prevPosition.equals(newPosition)) {
                 updateOrganismsMap(newPosition);
                 position.set(newPosition);
