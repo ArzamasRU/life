@@ -59,9 +59,10 @@ public class Plant extends Organism {
         if (randomDirection != 0) {
             randomPosition = CommonUtils.getDirection(position, randomDirection);
             new Plant(randomPosition);
+            fullness -= PLANT_DIVISION_COST;
+            return true;
         }
-        fullness -= PLANT_DIVISION_COST;
-        return true;
+        return false;
     }
 
     @Override

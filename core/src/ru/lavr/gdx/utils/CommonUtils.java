@@ -9,7 +9,6 @@ import static ru.lavr.gdx.constants.Constant.RIGHT_EDGE;
 import static ru.lavr.gdx.constants.Constant.STEP;
 import static ru.lavr.gdx.constants.Constant.UPPER_EDGE;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -228,7 +227,7 @@ public class CommonUtils {
     public static Rectangle getSquare(Rectangle rectangle) {
         return OrganismHolder.getOrganismHolder().getSquares().stream()
                 .filter(sqr -> sqr.overlaps(rectangle))
-                .findAny().orElseThrow(null);
+                .findAny().orElse(null);
     }
 
     public static List<Rectangle> getSquares(Rectangle rectangle) {

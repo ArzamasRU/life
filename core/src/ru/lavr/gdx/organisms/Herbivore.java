@@ -46,8 +46,12 @@ public class Herbivore extends Organism {
 
     @Override
     public void move() {
+        if (active == false) {
+            return;
+        }
         fullness -= STEP_EXHAUSTION;
-        if (CommonUtils.isNotFreeSpace(position) || active == false) {
+        if (CommonUtils.isNotFreeSpace(position)) {
+            eat();
             return;
         }
         if (!runAway()) {
@@ -70,9 +74,9 @@ public class Herbivore extends Organism {
             if (randomDirection != 0) {
                 randomPosition = CommonUtils.getDirection(position, randomDirection);
                 new Herbivore(randomPosition);
+                fullness -= HERBIVORE_DIVISION_COST;
+                return true;
             }
-            fullness -= HERBIVORE_DIVISION_COST;
-            return true;
         }
         return false;
     }

@@ -58,19 +58,19 @@ public class Starter extends ApplicationAdapter {
 
         organismHolder.updateOrganisms();
 
-//        Gdx.app.log("step ", String.valueOf(step));
-//        Gdx.app.log("plants ", String.valueOf(plants.size()));
-//        Gdx.app.log("herbivores ", String.valueOf(herbivores.size()));
-//        Gdx.app.log("predators ", String.valueOf(predators.size()));
+        Gdx.app.log("step ", String.valueOf(step));
+        Gdx.app.log("plants ", String.valueOf(plants.size()));
+        Gdx.app.log("herbivores ", String.valueOf(herbivores.size()));
+        Gdx.app.log("predators ", String.valueOf(predators.size()));
         batch.end();
     }
 
     public void pause() {
         long delta = System.currentTimeMillis() - time;
-        Gdx.app.log("pause = ", String.valueOf(delta));
-        if (delta > PAUSE) {
-            Gdx.app.log("pause = ", String.valueOf(delta));
-        }
+//        Gdx.app.log("pause = ", String.valueOf(delta));
+//        if (delta > PAUSE) {
+//            Gdx.app.log("pause = ", String.valueOf(delta));
+//        }
         if (delta < PAUSE) {
             try {
                 Thread.sleep(PAUSE - delta);

@@ -46,10 +46,14 @@ public class Predator extends Organism {
 
     @Override
     public void move() {
-        if (CommonUtils.isNotFreeSpace(position) || active == false) {
+        if (active == false) {
             return;
         }
         fullness -= STEP_EXHAUSTION;
+        if (CommonUtils.isNotFreeSpace(position)) {
+            eat();
+            return;
+        }
         if (!reproduce()) {
             if (!eat()) {
                 if (!follow()) {
@@ -70,9 +74,9 @@ public class Predator extends Organism {
             if (randomDirection != 0) {
                 randomPosition = CommonUtils.getDirection(position, randomDirection);
                 new Predator(randomPosition);
+                fullness -= PREDATOR_DIVISION_COST;
+                return true;
             }
-            fullness -= PREDATOR_DIVISION_COST;
-            return true;
         }
         return false;
     }
