@@ -1,4 +1,4 @@
-package ru.lavr.gdx.organisms;
+package ru.lavr.gdx.holders;
 
 import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
 import static ru.lavr.gdx.constants.Constant.RIGHT_EDGE;
@@ -7,6 +7,7 @@ import static ru.lavr.gdx.constants.Constant.STEP;
 import static ru.lavr.gdx.constants.Constant.UPPER_EDGE;
 
 import com.badlogic.gdx.math.Rectangle;
+import ru.lavr.gdx.organisms.Organism;
 
 import java.util.ArrayList;
 import java.util.HashMap;

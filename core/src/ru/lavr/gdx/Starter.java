@@ -11,7 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import ru.lavr.gdx.organisms.Herbivore;
 import ru.lavr.gdx.organisms.Organism;
-import ru.lavr.gdx.organisms.OrganismHolder;
+import ru.lavr.gdx.holders.OrganismHolder;
 import ru.lavr.gdx.organisms.Plant;
 import ru.lavr.gdx.organisms.Predator;
 

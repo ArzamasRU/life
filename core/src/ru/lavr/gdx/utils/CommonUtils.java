@@ -13,7 +13,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import ru.lavr.gdx.organisms.Organism;
-import ru.lavr.gdx.organisms.OrganismHolder;
+import ru.lavr.gdx.holders.OrganismHolder;
 import ru.lavr.gdx.organisms.Plant;
 
 import java.util.Arrays;

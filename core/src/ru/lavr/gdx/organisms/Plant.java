@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import ru.lavr.gdx.holders.OrganismHolder;
 import ru.lavr.gdx.utils.CommonUtils;
 
 import java.util.List;
