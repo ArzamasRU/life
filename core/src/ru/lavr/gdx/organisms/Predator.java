@@ -23,11 +23,10 @@ import java.util.List;
 import java.util.Map;
 
 public class Predator extends Organism {
-    private static final Pixmap pixmap;
     private static final Texture texture;
 
     static {
-        pixmap = new Pixmap(CELL_SIZE, CELL_SIZE, RGBA8888);
+        Pixmap pixmap = new Pixmap(CELL_SIZE, CELL_SIZE, RGBA8888);
         pixmap.setColor(Color.RED);
         pixmap.fillRectangle(0, 0, CELL_SIZE, CELL_SIZE);
         texture = new Texture(pixmap);

@@ -22,11 +22,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class Plant extends Organism {
-    private static final Pixmap pixmap;
     private static final Texture texture;
 
     static {
-        pixmap = new Pixmap(CELL_SIZE, CELL_SIZE, RGBA8888);
+        Pixmap pixmap = new Pixmap(CELL_SIZE, CELL_SIZE, RGBA8888);
         pixmap.setColor(Color.CHARTREUSE);
         pixmap.fillRectangle(0, 0, CELL_SIZE, CELL_SIZE);
         texture = new Texture(pixmap);

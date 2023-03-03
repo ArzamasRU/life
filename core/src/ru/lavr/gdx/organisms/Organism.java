@@ -18,20 +18,21 @@ import java.util.stream.IntStream;
 
 public abstract class Organism {
     protected final List<Organism> neighbors = new ArrayList<>();
+    protected final Vector2 momentum = new Vector2();
+    protected final Rectangle currSquare = new Rectangle();
+    private final Texture texture;
     //    assign x and y each time before use
     private final Rectangle rectangle = new Rectangle(0, 0, CELL_SIZE, CELL_SIZE);
 
     protected Vector2 position;
-    private Texture texture;
-    protected boolean outOfBorder;
     protected boolean active = true;
-    protected final Vector2 momentum = new Vector2();
     protected int fullness = 1;
-    protected final Rectangle currSquare = new Rectangle();
+    private boolean outOfBorder;
 
     public Organism(boolean outOfBorder) {
         this.active = false;
         this.outOfBorder = outOfBorder;
+        this.texture = null;
     }
 
     public Organism(Texture texture) {

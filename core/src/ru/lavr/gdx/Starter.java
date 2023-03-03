@@ -1,17 +1,17 @@
 package ru.lavr.gdx;
 
-import static ru.lavr.gdx.constants.LifeConstants.ADD_QTY_PLANTS;
 import static ru.lavr.gdx.constants.ApplicationConstants.CAMERA_START_POSITION_X;
 import static ru.lavr.gdx.constants.ApplicationConstants.CAMERA_START_POSITION_Y;
-import static ru.lavr.gdx.constants.LifeConstants.MAX_QTY_PLANTS;
 import static ru.lavr.gdx.constants.ApplicationConstants.PAUSE;
 import static ru.lavr.gdx.constants.ApplicationConstants.RIGHT_EDGE;
-import static ru.lavr.gdx.constants.LifeConstants.START_QTY_HERBIVORES;
-import static ru.lavr.gdx.constants.LifeConstants.START_QTY_PREDATORS;
-import static ru.lavr.gdx.constants.LifeConstants.STEP;
 import static ru.lavr.gdx.constants.ApplicationConstants.UPPER_EDGE;
 import static ru.lavr.gdx.constants.ApplicationConstants.WINDOW_HEIGHT;
 import static ru.lavr.gdx.constants.ApplicationConstants.WINDOW_WIDTH;
+import static ru.lavr.gdx.constants.LifeConstants.ADD_QTY_PLANTS;
+import static ru.lavr.gdx.constants.LifeConstants.MAX_QTY_PLANTS;
+import static ru.lavr.gdx.constants.LifeConstants.START_QTY_HERBIVORES;
+import static ru.lavr.gdx.constants.LifeConstants.START_QTY_PREDATORS;
+import static ru.lavr.gdx.constants.LifeConstants.STEP;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
@@ -33,15 +33,16 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class Starter extends ApplicationAdapter implements InputProcessor {
-    private SpriteBatch batch;
     private final OrthographicCamera camera = new OrthographicCamera();
     private final OrganismHolder organismHolder = OrganismHolder.getOrganismHolder();
     private final Viewport extendViewport = new StretchViewport(WINDOW_WIDTH, WINDOW_HEIGHT, camera);
+    private final List<Organism> plants = organismHolder.getPlants();
+    private final List<Organism> herbivores = organismHolder.getHerbivores();
+    private final List<Organism> predators = organismHolder.getPredators();
+
+    private SpriteBatch batch;
     private long time;
     private long step;
-    private List<Organism> plants;
-    private List<Organism> herbivores;
-    private List<Organism> predators;
     private boolean isLeftPressed;
     private boolean isRightPressed;
     private boolean isUpPressed;
@@ -53,9 +54,6 @@ public class Starter extends ApplicationAdapter implements InputProcessor {
         camera.position.set(CAMERA_START_POSITION_X, CAMERA_START_POSITION_Y, 0);
         batch = new SpriteBatch();
         Gdx.input.setInputProcessor(this);
-        plants = organismHolder.getPlants();
-        herbivores = organismHolder.getHerbivores();
-        predators = organismHolder.getPredators();
         IntStream.range(0, START_QTY_HERBIVORES).forEach(i -> herbivores.add(new Herbivore()));
         IntStream.range(0, START_QTY_PREDATORS).forEach(i -> predators.add(new Predator()));
     }

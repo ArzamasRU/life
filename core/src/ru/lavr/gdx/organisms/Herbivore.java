@@ -23,12 +23,11 @@ import java.util.List;
 import java.util.Map;
 
 public class Herbivore extends Organism {
-    private static final Pixmap pixmap;
     private static final Texture texture;
     private boolean isLastStep = false;
 
     static {
-        pixmap = new Pixmap(CELL_SIZE, CELL_SIZE, RGBA8888);
+        Pixmap pixmap = new Pixmap(CELL_SIZE, CELL_SIZE, RGBA8888);
         pixmap.setColor(Color.FOREST);
         pixmap.fillRectangle(0, 0, CELL_SIZE, CELL_SIZE);
         texture = new Texture(pixmap);

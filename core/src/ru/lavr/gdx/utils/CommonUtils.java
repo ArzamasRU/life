@@ -24,8 +24,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class CommonUtils {
-    private final static Rectangle rectangle = new Rectangle(0, 0, CELL_SIZE, CELL_SIZE);
     private final static Rectangle field = new Rectangle(LEFT_EDGE, BOTTOM_EDGE, RIGHT_EDGE, UPPER_EDGE);
+    //    assign x and y each time before use
+    private final static Rectangle rectangle = new Rectangle(0, 0, CELL_SIZE, CELL_SIZE);
+    //    assign x, y, width, height each time before use
     private final static Rectangle changedRectangle = new Rectangle(0, 0, 0, 0);
 
     public static Vector2 getRandomPosition() {
