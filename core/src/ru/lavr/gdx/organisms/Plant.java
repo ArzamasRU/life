@@ -53,9 +53,6 @@ public class Plant extends Organism {
     @Override
     public boolean reproduce() {
         Vector2 randomPosition;
-        if (neighbors.size() >= 8) {
-            return false;
-        }
         Integer randomDirection = CommonUtils.getRandomDirection(getAvailableDirections(position, currSquare));
         if (randomDirection != 0) {
             randomPosition = CommonUtils.getDirection(position, randomDirection);
@@ -74,7 +71,7 @@ public class Plant extends Organism {
         if (fullness < MAX_FULLNESS) {
             fullness += STEP_PLANT_FULLNESS;
         }
-        if (fullness >= PLANT_READY_FOR_DIVISION) {
+        if (fullness >= PLANT_READY_FOR_DIVISION && neighbors.size() < 8) {
             reproduce();
         }
     }

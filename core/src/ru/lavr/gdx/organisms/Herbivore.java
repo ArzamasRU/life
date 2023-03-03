@@ -25,6 +25,7 @@ import java.util.Map;
 public class Herbivore extends Organism {
     private static final Pixmap pixmap;
     private static final Texture texture;
+    private boolean isLastStep = false;
 
     static {
         pixmap = new Pixmap(CELL_SIZE, CELL_SIZE, RGBA8888);
@@ -51,6 +52,13 @@ public class Herbivore extends Organism {
             return;
         }
         fullness -= STEP_EXHAUSTION;
+        if (isLastStep) {
+            isLastStep = false;
+            return;
+        } else if (fullness <= 0) {
+            isLastStep = true;
+            return;
+        }
         if (CommonUtils.isNotFreeSpace(position, currSquare)) {
             eat();
             return;
@@ -145,5 +153,9 @@ public class Herbivore extends Organism {
             return true;
         }
         return false;
+    }
+
+    public boolean isLastStep() {
+        return isLastStep;
     }
 }

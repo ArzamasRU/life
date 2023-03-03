@@ -69,7 +69,7 @@ public class CommonUtils {
         return vector2;
     }
 
-    //    проверяет не перекрывается ли расположение с другими клетками
+    //    checks if the location overlaps with other cells
     public static boolean isValidPosition(Vector2 vector2, List<Organism> organisms) {
         rectangle.x = vector2.x;
         rectangle.y = vector2.y;
@@ -83,7 +83,7 @@ public class CommonUtils {
         return !isValidPosition(vector2, organisms);
     }
 
-    //    проверяет не заходит ли клетка за поля
+    //    checks if the cell goes beyond the fields
     public static boolean isValidDirection(Vector2 vector2) {
         rectangle.x = vector2.x;
         rectangle.y = vector2.y;

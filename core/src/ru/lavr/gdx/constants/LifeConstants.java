@@ -6,30 +6,30 @@ import static ru.lavr.gdx.constants.ApplicationConstants.UPPER_EDGE;
 public class LifeConstants {
     public static final int CELL_SIZE = 3;
     public static final int STEP = 3;
-    //    вероятность изменения импульса движения (если = 100, приведет к бесконечному циклу)
+    //    probability of change in momentum (if = 100, will result in an infinite loop)
     public static final int CHANCE_OF_MOMENTUM_CHANGE = 95;
     public static final int MAX_CHANCE = 100;
 
-    //    общие свойства
+    //    common properties
     public static final int MAX_FULLNESS = 500;
     public static final int STEP_EXHAUSTION = 1;
     public static final int EAT_RANGE = 1;
     public static final int REPRODUCE_RANGE = 1;
 
-    //    свойства plant
+    //    plant properties
     public static final int PLANT_DIVISION_COST = 99;
     public static final int STEP_PLANT_FULLNESS = 1;
     public static final int START_PLANT_FULLNESS = 1;
     public static final int PLANT_READY_FOR_DIVISION = 100;
 
-    //    свойства herbivore
+    //    herbivore properties
     public static final int HERBIVORE_VISION = 1;
     public static final int HERBIVORE_DIVISION_COST = 200;
     public static final int STEP_HERBIVORE_FULLNESS = 20;
     public static final int START_HERBIVORE_FULLNESS = 300;
     public static final int HERBIVORE_READY_FOR_DIVISION = 400;
 
-    //    свойства predator
+    //    predator properties
     public static final int PREDATOR_VISION = 2;
     public static final int PREDATOR_DIVISION_COST = 200;
     public static final int STEP_PREDATOR_FULLNESS = 40;

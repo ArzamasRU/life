@@ -1,9 +1,7 @@
 package ru.lavr.gdx.constants;
 
 public class ApplicationConstants {
-    //    общие константы алгоритма
     public static final int PAUSE = 0;
-    //    значения для ноута
     public static final int UPPER_EDGE = 2500;
     public static final int RIGHT_EDGE = 2500;
     public static final int BOTTOM_EDGE = 0;

@@ -18,7 +18,7 @@ import java.util.stream.IntStream;
 
 public abstract class Organism {
     protected final List<Organism> neighbors = new ArrayList<>();
-    //    каждый раз перед использованием назначать x и y
+    //    assign x and y each time before use
     private final Rectangle rectangle = new Rectangle(0, 0, CELL_SIZE, CELL_SIZE);
 
     protected Vector2 position;
@@ -138,6 +138,10 @@ public abstract class Organism {
 
     public Vector2 getPosition() {
         return position;
+    }
+
+    public boolean isActive() {
+        return active;
     }
 
     @Override

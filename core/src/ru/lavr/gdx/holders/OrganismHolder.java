@@ -1,12 +1,13 @@
 package ru.lavr.gdx.holders;
 
-import static ru.lavr.gdx.constants.LifeConstants.CELL_SIZE;
 import static ru.lavr.gdx.constants.ApplicationConstants.RIGHT_EDGE;
+import static ru.lavr.gdx.constants.ApplicationConstants.UPPER_EDGE;
+import static ru.lavr.gdx.constants.LifeConstants.CELL_SIZE;
 import static ru.lavr.gdx.constants.LifeConstants.SQUARE_SIZE;
 import static ru.lavr.gdx.constants.LifeConstants.STEP;
-import static ru.lavr.gdx.constants.ApplicationConstants.UPPER_EDGE;
 
 import com.badlogic.gdx.math.Rectangle;
+import ru.lavr.gdx.organisms.Herbivore;
 import ru.lavr.gdx.organisms.Organism;
 
 import java.util.ArrayList;
@@ -80,9 +81,11 @@ public class OrganismHolder {
         Map<Rectangle, List<Organism>> herbivoresMap = organismHolder.getHerbivoresMap();
         Map<Rectangle, List<Organism>> predatorsMap = organismHolder.getPredatorsMap();
 
-        plantsMap.values().forEach(orgs -> orgs.removeIf(org -> org.getFullness() <= 0));
-        herbivoresMap.values().forEach(orgs -> orgs.removeIf(org -> org.getFullness() <= 0));
-        predatorsMap.values().forEach(orgs -> orgs.removeIf(org -> org.getFullness() <= 0));
+        plantsMap.values().forEach(orgs -> orgs.removeIf(org -> org.getFullness() <= 0 || !org.isActive()));
+        herbivoresMap.values().forEach(orgs -> orgs.removeIf(
+                org -> !((Herbivore) org).isLastStep() && (org.getFullness() <= 0 || !org.isActive())
+        ));
+        predatorsMap.values().forEach(orgs -> orgs.removeIf(org -> org.getFullness() <= 0 || !org.isActive()));
 
         plants.clear();
         herbivores.clear();
