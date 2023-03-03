@@ -1,7 +1,7 @@
 package ru.lavr.gdx.organisms;
 
-import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
-import static ru.lavr.gdx.constants.Constant.REPRODUCE_RANGE;
+import static ru.lavr.gdx.constants.LifeConstants.CELL_SIZE;
+import static ru.lavr.gdx.constants.LifeConstants.REPRODUCE_RANGE;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;

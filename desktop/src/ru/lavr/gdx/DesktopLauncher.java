@@ -1,7 +1,7 @@
 package ru.lavr.gdx;
 
-import static ru.lavr.gdx.constants.Constant.WINDOW_HEIGHT;
-import static ru.lavr.gdx.constants.Constant.WINDOW_WIDTH;
+import static ru.lavr.gdx.constants.ApplicationConstants.WINDOW_HEIGHT;
+import static ru.lavr.gdx.constants.ApplicationConstants.WINDOW_WIDTH;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;

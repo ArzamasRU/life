@@ -1,13 +1,13 @@
 package ru.lavr.gdx.utils;
 
-import static ru.lavr.gdx.constants.Constant.BOTTOM_EDGE;
-import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
-import static ru.lavr.gdx.constants.Constant.CHANCE_OF_MOMENTUM_CHANGE;
-import static ru.lavr.gdx.constants.Constant.LEFT_EDGE;
-import static ru.lavr.gdx.constants.Constant.MAX_CHANCE;
-import static ru.lavr.gdx.constants.Constant.RIGHT_EDGE;
-import static ru.lavr.gdx.constants.Constant.STEP;
-import static ru.lavr.gdx.constants.Constant.UPPER_EDGE;
+import static ru.lavr.gdx.constants.ApplicationConstants.BOTTOM_EDGE;
+import static ru.lavr.gdx.constants.LifeConstants.CELL_SIZE;
+import static ru.lavr.gdx.constants.LifeConstants.CHANCE_OF_MOMENTUM_CHANGE;
+import static ru.lavr.gdx.constants.ApplicationConstants.LEFT_EDGE;
+import static ru.lavr.gdx.constants.LifeConstants.MAX_CHANCE;
+import static ru.lavr.gdx.constants.ApplicationConstants.RIGHT_EDGE;
+import static ru.lavr.gdx.constants.LifeConstants.STEP;
+import static ru.lavr.gdx.constants.ApplicationConstants.UPPER_EDGE;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;

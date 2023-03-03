@@ -1,17 +1,17 @@
 package ru.lavr.gdx;
 
-import static ru.lavr.gdx.constants.Constant.ADD_QTY_PLANTS;
-import static ru.lavr.gdx.constants.Constant.CAMERA_START_POSITION_X;
-import static ru.lavr.gdx.constants.Constant.CAMERA_START_POSITION_Y;
-import static ru.lavr.gdx.constants.Constant.MAX_QTY_PLANTS;
-import static ru.lavr.gdx.constants.Constant.PAUSE;
-import static ru.lavr.gdx.constants.Constant.RIGHT_EDGE;
-import static ru.lavr.gdx.constants.Constant.START_QTY_HERBIVORES;
-import static ru.lavr.gdx.constants.Constant.START_QTY_PREDATORS;
-import static ru.lavr.gdx.constants.Constant.STEP;
-import static ru.lavr.gdx.constants.Constant.UPPER_EDGE;
-import static ru.lavr.gdx.constants.Constant.WINDOW_HEIGHT;
-import static ru.lavr.gdx.constants.Constant.WINDOW_WIDTH;
+import static ru.lavr.gdx.constants.LifeConstants.ADD_QTY_PLANTS;
+import static ru.lavr.gdx.constants.ApplicationConstants.CAMERA_START_POSITION_X;
+import static ru.lavr.gdx.constants.ApplicationConstants.CAMERA_START_POSITION_Y;
+import static ru.lavr.gdx.constants.LifeConstants.MAX_QTY_PLANTS;
+import static ru.lavr.gdx.constants.ApplicationConstants.PAUSE;
+import static ru.lavr.gdx.constants.ApplicationConstants.RIGHT_EDGE;
+import static ru.lavr.gdx.constants.LifeConstants.START_QTY_HERBIVORES;
+import static ru.lavr.gdx.constants.LifeConstants.START_QTY_PREDATORS;
+import static ru.lavr.gdx.constants.LifeConstants.STEP;
+import static ru.lavr.gdx.constants.ApplicationConstants.UPPER_EDGE;
+import static ru.lavr.gdx.constants.ApplicationConstants.WINDOW_HEIGHT;
+import static ru.lavr.gdx.constants.ApplicationConstants.WINDOW_WIDTH;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;

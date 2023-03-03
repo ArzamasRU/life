@@ -1,8 +1,9 @@
 package ru.lavr.gdx.constants;
 
-public class Constant {
-    //    общие константы алгоритма
-    public static final int PAUSE = 0;
+import static ru.lavr.gdx.constants.ApplicationConstants.RIGHT_EDGE;
+import static ru.lavr.gdx.constants.ApplicationConstants.UPPER_EDGE;
+
+public class LifeConstants {
     public static final int CELL_SIZE = 3;
     public static final int STEP = 3;
     //    вероятность изменения импульса движения (если = 100, приведет к бесконечному циклу)
@@ -34,22 +35,6 @@ public class Constant {
     public static final int STEP_PREDATOR_FULLNESS = 40;
     public static final int START_PREDATOR_FULLNESS = 300;
     public static final int PREDATOR_READY_FOR_DIVISION = 400;
-
-    //    значения для ноута
-    public static final int UPPER_EDGE = 2500;
-    public static final int RIGHT_EDGE = 2500;
-    public static final int BOTTOM_EDGE = 0;
-    public static final int LEFT_EDGE = 0;
-    public static final int WINDOW_HEIGHT = 720;
-    public static final int WINDOW_WIDTH = 1280;
-    public static final int CAMERA_START_POSITION_X = RIGHT_EDGE / 2;
-    public static final int CAMERA_START_POSITION_Y = UPPER_EDGE / 2;
-
-    //     для тестов
-//    public static final int UPPER_EDGE = 200;
-//    public static final int RIGHT_EDGE = 200;
-//    public static final int BOTTOM_EDGE = 0;
-//    public static final int LEFT_EDGE = 0;
 
     public static final double COEF_ADD_QTY_PLANTS = 0.0005;
     public static final double COEF_START_QTY_PREDATORS = 0.0015;

@@ -1,12 +1,12 @@
 package ru.lavr.gdx.organisms;
 
 import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
-import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
-import static ru.lavr.gdx.constants.Constant.MAX_FULLNESS;
-import static ru.lavr.gdx.constants.Constant.PLANT_DIVISION_COST;
-import static ru.lavr.gdx.constants.Constant.PLANT_READY_FOR_DIVISION;
-import static ru.lavr.gdx.constants.Constant.START_PLANT_FULLNESS;
-import static ru.lavr.gdx.constants.Constant.STEP_PLANT_FULLNESS;
+import static ru.lavr.gdx.constants.LifeConstants.CELL_SIZE;
+import static ru.lavr.gdx.constants.LifeConstants.MAX_FULLNESS;
+import static ru.lavr.gdx.constants.LifeConstants.PLANT_DIVISION_COST;
+import static ru.lavr.gdx.constants.LifeConstants.PLANT_READY_FOR_DIVISION;
+import static ru.lavr.gdx.constants.LifeConstants.START_PLANT_FULLNESS;
+import static ru.lavr.gdx.constants.LifeConstants.STEP_PLANT_FULLNESS;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;

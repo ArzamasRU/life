@@ -1,15 +1,15 @@
 package ru.lavr.gdx.organisms;
 
 import static com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888;
-import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
-import static ru.lavr.gdx.constants.Constant.EAT_RANGE;
-import static ru.lavr.gdx.constants.Constant.HERBIVORE_DIVISION_COST;
-import static ru.lavr.gdx.constants.Constant.HERBIVORE_READY_FOR_DIVISION;
-import static ru.lavr.gdx.constants.Constant.HERBIVORE_VISION;
-import static ru.lavr.gdx.constants.Constant.MAX_FULLNESS;
-import static ru.lavr.gdx.constants.Constant.START_HERBIVORE_FULLNESS;
-import static ru.lavr.gdx.constants.Constant.STEP_EXHAUSTION;
-import static ru.lavr.gdx.constants.Constant.STEP_HERBIVORE_FULLNESS;
+import static ru.lavr.gdx.constants.LifeConstants.CELL_SIZE;
+import static ru.lavr.gdx.constants.LifeConstants.EAT_RANGE;
+import static ru.lavr.gdx.constants.LifeConstants.HERBIVORE_DIVISION_COST;
+import static ru.lavr.gdx.constants.LifeConstants.HERBIVORE_READY_FOR_DIVISION;
+import static ru.lavr.gdx.constants.LifeConstants.HERBIVORE_VISION;
+import static ru.lavr.gdx.constants.LifeConstants.MAX_FULLNESS;
+import static ru.lavr.gdx.constants.LifeConstants.START_HERBIVORE_FULLNESS;
+import static ru.lavr.gdx.constants.LifeConstants.STEP_EXHAUSTION;
+import static ru.lavr.gdx.constants.LifeConstants.STEP_HERBIVORE_FULLNESS;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;

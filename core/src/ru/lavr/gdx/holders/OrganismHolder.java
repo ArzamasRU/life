@@ -1,10 +1,10 @@
 package ru.lavr.gdx.holders;
 
-import static ru.lavr.gdx.constants.Constant.CELL_SIZE;
-import static ru.lavr.gdx.constants.Constant.RIGHT_EDGE;
-import static ru.lavr.gdx.constants.Constant.SQUARE_SIZE;
-import static ru.lavr.gdx.constants.Constant.STEP;
-import static ru.lavr.gdx.constants.Constant.UPPER_EDGE;
+import static ru.lavr.gdx.constants.LifeConstants.CELL_SIZE;
+import static ru.lavr.gdx.constants.ApplicationConstants.RIGHT_EDGE;
+import static ru.lavr.gdx.constants.LifeConstants.SQUARE_SIZE;
+import static ru.lavr.gdx.constants.LifeConstants.STEP;
+import static ru.lavr.gdx.constants.ApplicationConstants.UPPER_EDGE;
 
 import com.badlogic.gdx.math.Rectangle;
 import ru.lavr.gdx.organisms.Organism;
