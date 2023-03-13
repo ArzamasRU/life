@@ -25,14 +25,14 @@ public class LifeConstants {
     //    herbivore properties
     public static final int HERBIVORE_VISION = 1;
     public static final int HERBIVORE_DIVISION_COST = 200;
-    public static final int STEP_HERBIVORE_FULLNESS = 20;
+    public static final int STEP_HERBIVORE_FULLNESS = 30;
     public static final int START_HERBIVORE_FULLNESS = 300;
     public static final int HERBIVORE_READY_FOR_DIVISION = 400;
 
     //    predator properties
     public static final int PREDATOR_VISION = 2;
     public static final int PREDATOR_DIVISION_COST = 200;
-    public static final int STEP_PREDATOR_FULLNESS = 40;
+    public static final int STEP_PREDATOR_FULLNESS = 30;
     public static final int START_PREDATOR_FULLNESS = 300;
     public static final int PREDATOR_READY_FOR_DIVISION = 400;
 

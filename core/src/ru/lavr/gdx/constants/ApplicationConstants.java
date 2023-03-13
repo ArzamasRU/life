@@ -10,4 +10,5 @@ public class ApplicationConstants {
     public static final int WINDOW_WIDTH = 1280;
     public static final int CAMERA_START_POSITION_X = RIGHT_EDGE / 2;
     public static final int CAMERA_START_POSITION_Y = UPPER_EDGE / 2;
+    public static final int CAMERA_STEP = 10;
 }

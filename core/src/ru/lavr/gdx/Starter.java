@@ -8,10 +8,10 @@ import static ru.lavr.gdx.constants.ApplicationConstants.UPPER_EDGE;
 import static ru.lavr.gdx.constants.ApplicationConstants.WINDOW_HEIGHT;
 import static ru.lavr.gdx.constants.ApplicationConstants.WINDOW_WIDTH;
 import static ru.lavr.gdx.constants.LifeConstants.ADD_QTY_PLANTS;
+import static ru.lavr.gdx.constants.ApplicationConstants.CAMERA_STEP;
 import static ru.lavr.gdx.constants.LifeConstants.MAX_QTY_PLANTS;
 import static ru.lavr.gdx.constants.LifeConstants.START_QTY_HERBIVORES;
 import static ru.lavr.gdx.constants.LifeConstants.START_QTY_PREDATORS;
-import static ru.lavr.gdx.constants.LifeConstants.STEP;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationAdapter;
@@ -92,16 +92,16 @@ public class Starter extends ApplicationAdapter implements InputProcessor {
     public void move() {
         float cameraBorder = (float) WINDOW_WIDTH / 2;
         if (isLeftPressed && camera.position.x - cameraBorder > 0) {
-            camera.translate(-STEP, 0);
+            camera.translate(-CAMERA_STEP, 0);
         }
         if (isRightPressed && camera.position.x + cameraBorder < RIGHT_EDGE) {
-            camera.translate(STEP, 0);
+            camera.translate(CAMERA_STEP, 0);
         }
         if (isUpPressed && camera.position.y + cameraBorder < UPPER_EDGE) {
-            camera.translate(0, STEP);
+            camera.translate(0, CAMERA_STEP);
         }
         if (isDownPressed && camera.position.y - cameraBorder > 0) {
-            camera.translate(0, -STEP);
+            camera.translate(0, -CAMERA_STEP);
         }
     }
 
